@@ -1,11 +1,20 @@
 Package: ecometrics
-Title: What the Package Does (One Line, Title Case)
+Title: Model of trait-environment relationships at community level
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
+    person("Maria A.", "Hurtado-Materon", email = "maria.h.m_1995@tamu.edu", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+Imports:
+    ggplot2,
+    leaflet,
+    dplyr,
+    purrr,
+    raster,
+    rnaturalearth,
+    sf,
+    tibble,
+    viridis
 RoxygenNote: 7.3.2
