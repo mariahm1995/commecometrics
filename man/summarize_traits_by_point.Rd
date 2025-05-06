@@ -9,8 +9,8 @@ summarize_traits_by_point(
   trait_df,
   species_polygons,
   trait_column = NULL,
-  species_name_col = "binomial",
-  continent_shp = FALSE,
+  species_name_col = "sci_name",
+  continent = FALSE,
   lon_col = "Longitude",
   lat_col = "Latitude",
   parallel = TRUE,
@@ -27,9 +27,9 @@ and the trait of interest (e.g., 'RBL').}
 
 \item{trait_column}{The name of the trait column in \code{trait_df} to summarize.}
 
-\item{species_name_col}{The name of the column in \code{species_polygons} that contains species names (default = "binomial").}
+\item{species_name_col}{The name of the column in \code{species_polygons} that contains species names (default = "sci_name").}
 
-\item{continent_shp}{Optional. A shapefile (\code{sf} object) with continental boundaries and a column named 'CONTINENT'.}
+\item{continent}{Logical. If \code{TRUE}, assigns each sampling point to a continent using the Natural Earth shapefile via \code{rnaturalearth::ne_countries()}. If \code{FALSE} (default), no continent assignment is performed.}
 
 \item{lon_col}{Name of the longitude column in \code{points_df}. Default is 'Longitude'.}
 

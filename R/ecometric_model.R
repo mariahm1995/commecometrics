@@ -52,11 +52,11 @@ ecometric_model <- function(points_df,
 
   # Determine bin numbers if not provided
   if (is.null(grid_bins_mean)) {
-    grid_bins_mean <- optimal_bins_scott(filtered_df$mean_trait)
+    grid_bins_mean <- optimal_bins(filtered_df$mean_trait)
     message("Optimal number of mean trait bins (Scott's rule): ", grid_bins_mean)
   }
   if (is.null(grid_bins_sd)) {
-    grid_bins_sd <- optimal_bins_scott(filtered_df$sd_trait)
+    grid_bins_sd <- optimal_bins(filtered_df$sd_trait)
     message("Optimal number of SD trait bins (Scott's rule): ", grid_bins_sd)
   }
 

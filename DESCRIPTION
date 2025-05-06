@@ -1,9 +1,9 @@
-Package: ecometrics
-Title: Model of trait-environment relationships at community level
+Package: commecometrics
+Title: Ecometrics models of trait-environment relationships at community level
 Version: 0.0.0.9000
 Authors@R: 
     person("Maria A.", "Hurtado-Materon", email = "maria.h.m_1995@tamu.edu", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: The commecometrics package implements a flexible framework for modeling the relationship between functional traits and both quantitative and qualitative environmental variables at the community level, using trait binning and likelihood-based environmental estimation. It provides tools for building ecometric models, evaluating model accuracy, projecting fossil samples onto modern ecometric spaces, and visualizing the results.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

@@ -9,8 +9,8 @@
 #'                and the trait of interest (e.g., 'RBL').
 #' @param species_polygons An `sf` object containing species distribution polygons. Must include a species name column.
 #' @param trait_column The name of the trait column in `trait_df` to summarize.
-#' @param species_name_col The name of the column in `species_polygons` that contains species names (default = "binomial").
-#' @param continent_shp Optional. A shapefile (`sf` object) with continental boundaries and a column named 'CONTINENT'.
+#' @param species_name_col The name of the column in `species_polygons` that contains species names (default = "sci_name").
+#' @param continent Logical. If \code{TRUE}, assigns each sampling point to a continent using the Natural Earth shapefile via \code{rnaturalearth::ne_countries()}. If \code{FALSE} (default), no continent assignment is performed.
 #' @param lon_col Name of the longitude column in `points_df`. Default is 'Longitude'.
 #' @param lat_col Name of the latitude column in `points_df`. Default is 'Latitude'.
 #' @param parallel Logical; whether to parallelize the summarization step (default TRUE).
@@ -25,13 +25,13 @@ summarize_traits_by_point <- function(points_df,
                                       trait_df,
                                       species_polygons,
                                       trait_column = NULL,
-                                      species_name_col = "binomial",
-                                      continent_shp = FALSE,
+                                      species_name_col = "sci_name",
+                                      continent = FALSE,
                                       lon_col = "Longitude",
                                       lat_col = "Latitude",
                                       parallel = TRUE,
                                       n_cores = parallel::detectCores() - 1) {
-  if(continent_shp){
+  if (isTRUE(continent)) {
     continent_shp <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
   }
 
@@ -116,23 +116,13 @@ summarize_traits_by_point <- function(points_df,
 
   points_df <- dplyr::bind_cols(points_df, trait_summaries)
 
-  if (continent_shp) {
+  if (isTRUE(continent)) {
     message("Assigning continent to each point...")
 
-    if (inherits(continent_shp, "Spatial")) {
-      continent_shp <- sf::st_as_sf(continent_shp)
-    }
     continent_shp <- sf::st_make_valid(continent_shp)
 
     points_sf <- sf::st_as_sf(points_df, coords = c(lon_col, lat_col), crs = sf::st_crs(continent_shp))
     joined <- sf::st_join(points_sf, continent_shp, left = TRUE)
-
-    if ("continent" %in% names(joined)) {
-      points_df$continent <- joined$continent
-    } else {
-      warning("The 'continent' column was not found in the shapefile.")
-      points_df$continent <- NA
-    }
   }
   return(list(
     points = points_df,

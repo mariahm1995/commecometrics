@@ -1,7 +1,7 @@
 #' Perform Sensitivity Analysis on Qualitative Ecometric Models
 #'
 #' This function evaluates how varying sample sizes affect the prediction accuracy
-#' of categorical ecometric models, using parallel processing for efficiency.
+#' of categorical ecometric models.
 #'
 #' @param points_df Data frame containing ecometric points with mean_trait, sd_trait, count_trait, and the categorical trait.
 #' @param category_col Name of the column containing the categorical trait.
@@ -19,15 +19,14 @@
 #'
 #' @export
 sensitivity_analysis_qual <- function(points_df,
-                                             category_col,
-                                             sample_sizes = seq(100, 10000, 1000),
-                                             iterations = 20,
-                                             test_split = 0.2,
-                                             grid_bins_mean = NULL,
-                                             grid_bins_sd = NULL,
-                                             parallel = TRUE,
-                                             n_cores = parallel::detectCores() - 1) {
-
+                                      category_col,
+                                      sample_sizes = seq(100, 10000, 1000),
+                                      iterations = 20,
+                                      test_split = 0.2,
+                                      grid_bins_mean = NULL,
+                                      grid_bins_sd = NULL,
+                                      parallel = TRUE,
+                                      n_cores = parallel::detectCores() - 1) {
   # Helper: mode function
   get_mode <- function(x) {
     ux <- unique(x)
@@ -66,10 +65,10 @@ sensitivity_analysis_qual <- function(points_df,
 
     # Determine bin numbers if not provided
     if (is.null(grid_bins_mean)) {
-      grid_bins_mean_train <- optimal_bins_scott(training_data$mean_trait)
+      grid_bins_mean_train <- optimal_bins(training_data$mean_trait)
     }
     if (is.null(grid_bins_sd)) {
-      grid_bins_sd_train <- optimal_bins_scott(training_data$sd_trait)
+      grid_bins_sd_train <- optimal_bins(training_data$sd_trait)
     }
 
     # Binning function
@@ -92,18 +91,20 @@ sensitivity_analysis_qual <- function(points_df,
     # Predict category per bin
     bin_predictions <- training_data %>%
       dplyr::group_by(mbc, sdc) %>%
-      dplyr::summarise(env_est = as.character(na.omit(get_mode(.data[[category_col]]))),
-                       .groups = "drop")
+      dplyr::summarise(
+        env_est = as.character(na.omit(get_mode(.data[[category_col]]))),
+        .groups = "drop"
+      )
 
     # Predict training
     training_data <- dplyr::left_join(training_data, bin_predictions, by = c("mbc", "sdc"))
-    training_accuracy <- mean(training_data[[category_col]] == training_data$env_est.y, na.rm = TRUE)
+    training_accuracy <- mean(training_data[[category_col]] == training_data$env_est, na.rm = TRUE)
 
     # Predict testing
     testing_data$mbc <- .bincode(testing_data$mean_trait, breaks = mean_bin_train$breaks, include.lowest = TRUE)
     testing_data$sdc <- .bincode(testing_data$sd_trait, breaks = sd_bin_train$breaks, include.lowest = TRUE)
     testing_data <- dplyr::left_join(testing_data, bin_predictions, by = c("mbc", "sdc"))
-    testing_accuracy <- mean(testing_data[[category_col]] == testing_data$env_est.y, na.rm = TRUE)
+    testing_accuracy <- mean(testing_data[[category_col]] == testing_data$env_est, na.rm = TRUE)
 
     return(data.frame(
       SampleSize = sample_size,
@@ -119,7 +120,7 @@ sensitivity_analysis_qual <- function(points_df,
     parallel::clusterExport(cl, varlist = c(
       "points_df", "category_col", "test_split", "grid_bins_mean_train",
       "grid_bins_sd_train", "iterations", "single_iteration", "get_mode",
-      "optimal_bins_scott", "grid_bins_mean", "grid_bins_sd"
+      "optimal_bins", "grid_bins_mean", "grid_bins_sd"
     ), envir = environment())
     parallel::clusterEvalQ(cl, library(dplyr))
 
@@ -147,16 +148,20 @@ sensitivity_analysis_qual <- function(points_df,
 
   with(combined_results_clean, {
     # Training accuracy
-    plot(SampleSize, Training_Accuracy, pch = 16, col = transp_black,
-         xlab = "Sample size", ylab = "Training Accuracy",
-         main = "Training Accuracy vs Sample size", ylim = c(0, 1))
+    plot(SampleSize, Training_Accuracy,
+      pch = 16, col = transp_black,
+      xlab = "Sample size", ylab = "Training Accuracy",
+      main = "Training Accuracy vs Sample size", ylim = c(0, 1)
+    )
     loess_fit <- loess(Training_Accuracy ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)
 
     # Testing accuracy
-    plot(SampleSize, Testing_Accuracy, pch = 16, col = transp_black,
-         xlab = "Sample size", ylab = "Testing Accuracy",
-         main = "Testing Accuracy vs Sample size", ylim = c(0, 1))
+    plot(SampleSize, Testing_Accuracy,
+      pch = 16, col = transp_black,
+      xlab = "Sample size", ylab = "Testing Accuracy",
+      main = "Testing Accuracy vs Sample size", ylim = c(0, 1)
+    )
     loess_fit <- loess(Testing_Accuracy ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)
   })

@@ -29,32 +29,31 @@
 #'
 #' @export
 reconstruct_env <- function(fossildata,
-                                         model_out,
-                                         inv_transform = NULL,
-                                         ci = 0.05,
-                                         match_nearest = TRUE,
-                                         fossil_lon = NULL,
-                                         fossil_lat = NULL,
-                                         modern_id = NULL,
-                                         modern_lon = NULL,
-                                         modern_lat = NULL,
-                                         crs_proj = 4326) {
-  
+                            model_out,
+                            inv_transform = NULL,
+                            ci = 0.05,
+                            match_nearest = TRUE,
+                            fossil_lon = NULL,
+                            fossil_lat = NULL,
+                            modern_id = NULL,
+                            modern_lon = NULL,
+                            modern_lat = NULL,
+                            crs_proj = 4326) {
   message("Binning fossil points into trait space...")
-  
+
   mbrks <- model_out$diagnostics$mbrks
   sdbrks <- model_out$diagnostics$sdbrks
   modern_points <- model_out$points_df
-  
+
   if (model_out$settings$transformed) {
     env_col <- "env_trans"
   } else {
     env_col <- model_out$settings$env_var
   }
-  
+
   mbc_col <- "mbc"
   sdc_col <- "sdc"
-  
+
   # Use model's inverse transform if inv_transform not provided
   if (missing(inv_transform) || is.null(inv_transform)) {
     if (!is.null(model_out$settings$inv_transform_fun)) {
@@ -65,31 +64,31 @@ reconstruct_env <- function(fossildata,
       inv_transform <- NULL
     }
   }
-  
+
   # Assign bins to fossil points
   fossildata$fossilmbc <- .bincode(fossildata$Mean, breaks = mbrks)
   fossildata$fossilsdbc <- .bincode(fossildata$SD, breaks = sdbrks)
-  
+
   fossilmodmax <- list()
-  
+
   for (i in seq_len(nrow(fossildata))) {
     mb <- fossildata$fossilmbc[i]
     sd <- fossildata$fossilsdbc[i]
-    
+
     if (!is.na(mb) && !is.na(sd)) {
       idx <- which(modern_points[[mbc_col]] == mb & modern_points[[sdc_col]] == sd)
       if (length(idx) > 0) {
         dat <- modern_points[[env_col]][idx]
         dens <- density(dat[!is.na(dat)], bw = 1)
         mode_val <- dens$x[which.max(dens$y)]
-        
+
         n <- length(dens$x)
         mode_idx <- which.max(dens$y)
         bound_n <- floor(n * ci)
-        
+
         lower_idx <- max(1, mode_idx - bound_n)
         upper_idx <- min(n, mode_idx + bound_n)
-        
+
         fossilmodmax$envest[i] <- mode_val
         fossilmodmax$minlimit[i] <- dens$x[lower_idx]
         fossilmodmax$maxlimit[i] <- dens$x[upper_idx]
@@ -104,36 +103,36 @@ reconstruct_env <- function(fossildata,
       fossilmodmax$maxlimit[i] <- NA
     }
   }
-  
+
   fossildata$envest <- fossilmodmax$envest
   fossildata$minlimit <- fossilmodmax$minlimit
   fossildata$maxlimit <- fossilmodmax$maxlimit
-  
+
   if (!is.null(inv_transform)) {
     fossildata$envestUN <- inv_transform(fossildata$envest)
     fossildata$minlimitUN <- inv_transform(fossildata$minlimit)
     fossildata$maxlimitUN <- inv_transform(fossildata$maxlimit)
   }
-  
+
   # Optional: match fossils to nearest modern points
   if (match_nearest) {
     if (is.null(fossil_lon) || is.null(fossil_lat) || is.null(modern_id) || is.null(modern_lon) || is.null(modern_lat)) {
       stop("When matching nearest, please provide fossil_lon, fossil_lat, modern_id, modern_lon, and modern_lat.")
     }
-    
+
     fossil.sf <- sf::st_as_sf(fossildata, coords = c(fossil_lon, fossil_lat), crs = crs_proj)
     modern.sf <- sf::st_as_sf(modern_points, coords = c(modern_lon, modern_lat), crs = crs_proj)
-    
+
     nearest_idx <- purrr::map_int(seq_len(nrow(fossil.sf)), function(i) {
       which.min(sf::st_distance(fossil.sf[i, ], modern.sf))
     })
-    
+
     fossildata$near.point <- modern_points[[modern_id]][nearest_idx]
-    
+
     fossildata <- merge(fossildata, modern_points, by.x = "near.point", by.y = modern_id)
   }
-  
-  # 🔥 Final step: Rename fossil-specific columns for clarity
+
+  # Final step: Rename fossil-specific columns for clarity
   if (!is.null(inv_transform)) {
     fossildata <- fossildata %>%
       dplyr::rename(
@@ -158,6 +157,6 @@ reconstruct_env <- function(fossildata,
         nearest_modern_point = near.point
       )
   }
-  
+
   return(fossildata)
 }

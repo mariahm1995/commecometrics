@@ -7,7 +7,7 @@
 #' @return Integer representing the optimal number of bins.
 
 #' @export
-optimal_bins_scott <- function(x) {
+optimal_bins <- function(x) {
   x <- na.omit(x)
   n <- length(x)
   if (n < 2) {
@@ -15,7 +15,7 @@ optimal_bins_scott <- function(x) {
     return(1)
   }
   sigma <- stats::sd(x)
-  h <- 3.49 * sigma / (n^(1/3))
+  h <- 3.49 * sigma / (n^(1 / 3))
   if (h <= 0) {
     warning("Non-positive bin width calculated; defaulting to 1 bin.")
     return(1)

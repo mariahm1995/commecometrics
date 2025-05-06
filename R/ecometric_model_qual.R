@@ -20,11 +20,10 @@
 #' @importFrom stats density setNames
 #' @export
 ecometric_model_qual <- function(points_df,
-                                        category_col,
-                                        grid_bins_mean = NULL,
-                                        grid_bins_sd = NULL,
-                                        min_species = 3) {
-
+                                 category_col,
+                                 grid_bins_mean = NULL,
+                                 grid_bins_sd = NULL,
+                                 min_species = 3) {
   # Remove NAs in trait category
   points_df <- points_df %>% dplyr::filter(!is.na(.data[[category_col]]))
 
@@ -41,11 +40,11 @@ ecometric_model_qual <- function(points_df,
 
   # Determine bin numbers if not provided
   if (is.null(grid_bins_mean)) {
-    grid_bins_mean <- optimal_bins_scott(filtered_df$mean_trait)
+    grid_bins_mean <- optimal_bins(filtered_df$mean_trait)
     message("Optimal bins for mean trait (Scott): ", grid_bins_mean)
   }
   if (is.null(grid_bins_sd)) {
-    grid_bins_sd <- optimal_bins_scott(filtered_df$sd_trait)
+    grid_bins_sd <- optimal_bins(filtered_df$sd_trait)
     message("Optimal bins for SD trait (Scott): ", grid_bins_sd)
   }
 

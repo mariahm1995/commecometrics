@@ -24,7 +24,6 @@ inspect_point_species <- function(res_list,
                                   ID_col = "GlobalID",
                                   min_species_valid = 3,
                                   env_var = NULL) {
-
   points_df <- res_list$points
   species_overlap <- res_list$overlap
 
@@ -60,8 +59,8 @@ inspect_point_species <- function(res_list,
         if (!is.null(env_var)) paste0("<b>Environmental variable value:</b> ", round(pt[[env_var]], 2), "<br>") else "",
         "<br><b>Species list:</b><br>", species_list
       )
-      }
-    )
+    }
+  )
 
   # Assign color based on user-defined threshold
   point_colors <- ifelse(selected_points$count_trait >= min_species_valid, "#3182bd", "#de2d26")

@@ -18,7 +18,6 @@ ecometric_space <- function(model_out,
                             fossil_color = "black",
                             modern_color = "#bc4749",
                             palette = c("#bc6c25", "#fefae0", "#606c38")) {
-
   # Extract model outputs
   raster_df <- model_out$eco_space
   mbreaks <- model_out$diagnostics$mbrks
@@ -26,7 +25,11 @@ ecometric_space <- function(model_out,
   grid_bins <- length(mbreaks) - 1
 
   # Axes formatting
-  middle_idx <- if (grid_bins %% 2 == 0) { (grid_bins / 2) + 1 } else { ceiling(grid_bins / 2) }
+  middle_idx <- if (grid_bins %% 2 == 0) {
+    (grid_bins / 2) + 1
+  } else {
+    ceiling(grid_bins / 2)
+  }
 
   x_breaks <- c(mbreaks[1], mbreaks[middle_idx], mbreaks[grid_bins - 1])
   x_labels <- round(x_breaks, 2)
@@ -48,20 +51,28 @@ ecometric_space <- function(model_out,
   # Optional fossil overlay
   if (!is.null(fossil_data)) {
     ecospace <- ecospace +
-      geom_rect(data = fossil_data,
-                aes(xmin = as.numeric(fossil_mbc) - 1,
-                    xmax = as.numeric(fossil_mbc),
-                    ymin = as.numeric(fossil_sdc) - 1,
-                    ymax = as.numeric(fossil_sdc)),
-                inherit.aes = FALSE,
-                colour = fossil_color, alpha = 0, size = 1) +
-      geom_rect(data = fossil_data,
-                aes(xmin = as.numeric(mbc) - 1,
-                    xmax = as.numeric(mbc),
-                    ymin = as.numeric(sdc) - 1,
-                    ymax = as.numeric(sdc)),
-                inherit.aes = FALSE,
-                colour = modern_color, alpha = 0, size = 1)
+      geom_rect(
+        data = fossil_data,
+        aes(
+          xmin = as.numeric(fossil_mbc) - 1,
+          xmax = as.numeric(fossil_mbc),
+          ymin = as.numeric(fossil_sdc) - 1,
+          ymax = as.numeric(fossil_sdc)
+        ),
+        inherit.aes = FALSE,
+        colour = fossil_color, alpha = 0, size = 1
+      ) +
+      geom_rect(
+        data = fossil_data,
+        aes(
+          xmin = as.numeric(mbc) - 1,
+          xmax = as.numeric(mbc),
+          ymin = as.numeric(sdc) - 1,
+          ymax = as.numeric(sdc)
+        ),
+        inherit.aes = FALSE,
+        colour = modern_color, alpha = 0, size = 1
+      )
   }
 
   return(ecospace)

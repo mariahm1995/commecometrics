@@ -17,12 +17,11 @@
 #' @export
 #'
 ecometric_space_qual <- function(model_out,
-                                        category_labels = NULL,
-                                        palette = NULL,
-                                        fossil_data = NULL,
-                                        fossil_color = "black",
-                                        modern_color = "#bc4749") {
-
+                                 category_labels = NULL,
+                                 palette = NULL,
+                                 fossil_data = NULL,
+                                 fossil_color = "black",
+                                 modern_color = "#bc4749") {
   requireNamespace("ggplot2")
   requireNamespace("dplyr")
   requireNamespace("viridis")
@@ -44,7 +43,11 @@ ecometric_space_qual <- function(model_out,
   sd_breaks <- model_out$diagnostics$sdbrks
   grid_bins <- length(mbreaks) - 1
 
-  middle_idx <- if (grid_bins %% 2 == 0) { (grid_bins / 2) + 1 } else { ceiling(grid_bins / 2) }
+  middle_idx <- if (grid_bins %% 2 == 0) {
+    (grid_bins / 2) + 1
+  } else {
+    ceiling(grid_bins / 2)
+  }
 
   x_breaks <- c(mbreaks[1], mbreaks[middle_idx], mbreaks[grid_bins - 1])
   x_labels <- round(x_breaks, 2)
@@ -72,31 +75,37 @@ ecometric_space_qual <- function(model_out,
   # Optional fossil overlay
   if (!is.null(fossil_data)) {
     p1 <- p1 +
-      ggplot2::geom_rect(data = fossil_data,
-                         ggplot2::aes(xmin = as.numeric(fossil_mbc) - 1,
-                                      xmax = as.numeric(fossil_mbc),
-                                      ymin = as.numeric(fossil_sdc) - 1,
-                                      ymax = as.numeric(fossil_sdc)),
-                         inherit.aes = FALSE,
-                         colour = fossil_color, alpha = 0, size = 1) +
-      geom_rect(data = fossil_data,
-                aes(xmin = as.numeric(mbc) - 1,
-                    xmax = as.numeric(mbc),
-                    ymin = as.numeric(sdc) - 1,
-                    ymax = as.numeric(sdc)),
-                inherit.aes = FALSE,
-                colour = modern_color, alpha = 0, size = 1)
+      ggplot2::geom_rect(
+        data = fossil_data,
+        ggplot2::aes(
+          xmin = as.numeric(fossil_mbc) - 1,
+          xmax = as.numeric(fossil_mbc),
+          ymin = as.numeric(fossil_sdc) - 1,
+          ymax = as.numeric(fossil_sdc)
+        ),
+        inherit.aes = FALSE,
+        colour = fossil_color, alpha = 0, size = 1
+      ) +
+      geom_rect(
+        data = fossil_data,
+        aes(
+          xmin = as.numeric(mbc) - 1,
+          xmax = as.numeric(mbc),
+          ymin = as.numeric(sdc) - 1,
+          ymax = as.numeric(sdc)
+        ),
+        inherit.aes = FALSE,
+        colour = modern_color, alpha = 0, size = 1
+      )
   }
 
   ## 2. Probability Maps for Each Category
   probability_maps <- list()
 
   for (cat in categories) {
-
     prob_col <- paste0("prob_", cat)
 
     if (prob_col %in% names(eco_space)) {
-
       rdf <- eco_space %>%
         dplyr::select(mbc, sdc, !!prob_col) %>%
         dplyr::rename(Probability = !!prob_col) %>%
@@ -114,20 +123,28 @@ ecometric_space_qual <- function(model_out,
       # Optional fossil overlay on probability maps
       if (!is.null(fossil_data)) {
         p <- p +
-          ggplot2::geom_rect(data = fossil_data,
-                             ggplot2::aes(xmin = as.numeric(fossil_mbc) - 1,
-                                          xmax = as.numeric(fossil_mbc),
-                                          ymin = as.numeric(fossil_sdc) - 1,
-                                          ymax = as.numeric(fossil_sdc)),
-                             inherit.aes = FALSE,
-                             colour = fossil_color, alpha = 0, size = 0.8) +
-          geom_rect(data = fossil_data,
-                    aes(xmin = as.numeric(mbc) - 1,
-                        xmax = as.numeric(mbc),
-                        ymin = as.numeric(sdc) - 1,
-                        ymax = as.numeric(sdc)),
-                    inherit.aes = FALSE,
-                    colour = modern_color, alpha = 0, size = 1)
+          ggplot2::geom_rect(
+            data = fossil_data,
+            ggplot2::aes(
+              xmin = as.numeric(fossil_mbc) - 1,
+              xmax = as.numeric(fossil_mbc),
+              ymin = as.numeric(fossil_sdc) - 1,
+              ymax = as.numeric(fossil_sdc)
+            ),
+            inherit.aes = FALSE,
+            colour = fossil_color, alpha = 0, size = 0.8
+          ) +
+          geom_rect(
+            data = fossil_data,
+            aes(
+              xmin = as.numeric(mbc) - 1,
+              xmax = as.numeric(mbc),
+              ymin = as.numeric(sdc) - 1,
+              ymax = as.numeric(sdc)
+            ),
+            inherit.aes = FALSE,
+            colour = modern_color, alpha = 0, size = 1
+          )
       }
 
       probability_maps[[cat]] <- p

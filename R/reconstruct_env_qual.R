@@ -24,15 +24,14 @@
 #'
 #' @export
 reconstruct_env_qual <- function(fossildata,
-                                        model_out,
-                                        match_nearest = TRUE,
-                                        fossil_lon = NULL,
-                                        fossil_lat = NULL,
-                                        modern_id = NULL,
-                                        modern_lon = NULL,
-                                        modern_lat = NULL,
-                                        crs_proj = 4326) {
-
+                                 model_out,
+                                 match_nearest = TRUE,
+                                 fossil_lon = NULL,
+                                 fossil_lat = NULL,
+                                 modern_id = NULL,
+                                 modern_lon = NULL,
+                                 modern_lat = NULL,
+                                 crs_proj = 4326) {
   message("Binning fossil points into trait space...")
 
   mbrks <- model_out$diagnostics$mbrks
