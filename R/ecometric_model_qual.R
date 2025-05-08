@@ -71,6 +71,12 @@ ecometric_model_qual <- function(points_df,
   # Remove NAs in trait category
   points_df <- points_df %>% dplyr::filter(!is.na(.data[[category_col]]))
 
+  # Coerce category column to character if needed
+  if (!is.character(points_df[[category_col]])) {
+    message("Converting '", category_col, "' to character.")
+    points_df[[category_col]] <- as.character(points_df[[category_col]])
+  }
+
   if (!all(c("mean_trait", "sd_trait", "count_trait") %in% names(points_df))) {
     stop("points_df must contain 'mean_trait', 'sd_trait', and 'count_trait'.")
   }

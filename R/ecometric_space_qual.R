@@ -77,7 +77,7 @@ ecometric_space_qual <- function(model_out,
   requireNamespace("viridis")
 
   eco_space <- model_out$eco_space
-  categories <- model_out$diagnostics$categories
+  categories <- as.character(model_out$diagnostics$categories)
 
   # Check if palette matches
   if (!is.null(palette)) {
