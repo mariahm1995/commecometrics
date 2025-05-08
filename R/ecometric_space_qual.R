@@ -77,7 +77,9 @@ ecometric_space_qual <- function(model_out,
   requireNamespace("viridis")
 
   eco_space <- model_out$eco_space
-  categories <- as.character(model_out$diagnostics$categories)
+
+  all_prob_cols <- grep("^prob_", names(eco_space), value = TRUE)
+  categories <- gsub("^prob_", "", all_prob_cols)
 
   # Check if palette matches
   if (!is.null(palette)) {
