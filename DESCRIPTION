@@ -1,9 +1,10 @@
 Package: commecometrics
-Title: Ecometrics models of trait-environment relationships at community level
+Title: Ecometric models of trait–environment relationships at community level
 Version: 0.0.0.9000
 Authors@R: 
-    person("Maria A.", "Hurtado-Materon", email = "maria.h.m_1995@tamu.edu", role = c("aut", "cre"))
-Description: The commecometrics package implements a flexible framework for modeling the relationship between functional traits and both quantitative and qualitative environmental variables at the community level, using trait binning and likelihood-based environmental estimation. It provides tools for building ecometric models, evaluating model accuracy, projecting fossil samples onto modern ecometric spaces, and visualizing the results.
+    person("Maria A.", "Hurtado-Materon", email = "maria.h.m_1995@tamu.edu", role = c("aut", "cre"), 
+    comment = c(ORCID = "https://orcid.org/0000-0002-3966-5478"))
+Description: A framework for modeling the relationship between functional traits and both quantitative and qualitative environmental variables at the community level, using trait binning and likelihood-based environmental estimation. It provides tools for building ecometric models, evaluating model accuracy, projecting fossil samples onto modern ecometric spaces, and visualizing the results.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -18,3 +19,13 @@ Imports:
     tibble,
     viridis
 RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Depends: 
+    R (>= 3.5)
+LazyData: true
+LazyDataCompression: xz
+Config/testthat/edition: 3

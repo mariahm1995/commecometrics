@@ -1,9 +1,14 @@
+#' @title Internal utilities and global variables
+#' @description Internal utilities and variable declarations to support NSE and ggplot2 piping.
+#' @name commecometrics-utils
 #' @importFrom grDevices rgb
 #' @importFrom graphics par
 #' @importFrom stats cor na.omit sd
 #' @importFrom ggplot2 ggplot aes geom_raster geom_rect scale_fill_gradientn
 #' @importFrom ggplot2 scale_x_continuous scale_y_continuous coord_fixed theme_bw
 NULL
+
+# Suppress CMD check notes for non-standard evaluation variables used in pipes and ggplot2
 utils::globalVariables(c(
   ".data", "env_est", "envest", "envestUN", "layer", "x", "y", "fossil_mbc", "fossil_sdc",
   "mbc", "sdc", "Probability", "SampleSize", "Training_Mean_Anomaly", "Training_Correlation",

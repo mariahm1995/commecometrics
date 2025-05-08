@@ -2,10 +2,10 @@
 % Please edit documentation in R/inspect_point_species.R
 \name{inspect_point_species}
 \alias{inspect_point_species}
-\title{Inspect Overlapping Species at Sampling Points}
+\title{Inspect overlapping species at sampling points}
 \usage{
 inspect_point_species(
-  res_list,
+  traits_summary,
   point_ids = NULL,
   n_random = 10,
   lon_col = "Longitude",
@@ -16,7 +16,7 @@ inspect_point_species(
 )
 }
 \arguments{
-\item{res_list}{Output list from \code{summarize_traits_by_point()}, containing \code{points} and \code{overlap}.}
+\item{traits_summary}{A list output from \code{summarize_traits_by_point()}, containing summarized trait values (\verb{$points}) and species overlaps (\verb{$overlap})..}
 
 \item{point_ids}{Optional. A vector of specific point IDs to inspect. If NULL, selects \code{n_random} points at random.}
 
@@ -36,6 +36,31 @@ inspect_point_species(
 An interactive leaflet map showing selected points with species list popups.
 }
 \description{
-Creates an interactive map to verify species overlap at selected points,
-highlighting suspicious points (e.g., points with too few species).
+Creates an interactive map to verify species overlap at selected points.
+}
+\examples{
+\dontrun{
+# Load sample data from the package
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+
+# Summarize traits at points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "TaxonName",
+  continent = FALSE,
+  parallel = FALSE
+)
+
+# Visualize a random sample of 10 points
+inspect_point_species(
+  traits_summary = traitsByPoint,
+  n_random = 10,
+  min_species_valid = 3
+)
+}
 }

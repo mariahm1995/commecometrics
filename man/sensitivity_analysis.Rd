@@ -2,7 +2,7 @@
 % Please edit documentation in R/sensitivity_analysis.R
 \name{sensitivity_analysis}
 \alias{sensitivity_analysis}
-\title{Perform Sensitivity Analysis on Ecometric Models}
+\title{Perform sensitivity analysis on ecometric models (quantitative environmental variables)}
 \usage{
 sensitivity_analysis(
   points_df,
@@ -18,8 +18,7 @@ sensitivity_analysis(
 )
 }
 \arguments{
-\item{points_df}{Data frame containing ecometric data with columns: 'mean_trait', 'sd_trait',
-'count_trait', and the specified environmental variable.}
+\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{mean_trait}, \code{sd_trait}, \code{count_trait}, and the environmental variable.}
 
 \item{env_var}{Name of the environmental variable column in points_df (e.g., "BIO12").}
 
@@ -29,9 +28,11 @@ sensitivity_analysis(
 
 \item{test_split}{Proportion of data to use for testing (default: 0.2).}
 
-\item{grid_bins_mean}{Number of bins for the mean trait axis (default: computed via Scott's rule).}
+\item{grid_bins_mean}{Number of bins for the mean trait axis. If \code{NULL} (default),
+the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
-\item{grid_bins_sd}{Number of bins for the SD trait axis (default: computed via Scott's rule).}
+\item{grid_bins_sd}{Number of bins for the SD trait axis. If \code{NULL} (default),
+the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
 \item{transform_fun}{Function to transform the environmental variable (default: NULL = no transformation).}
 
@@ -46,11 +47,55 @@ A list containing:
 }
 \description{
 This function evaluates how varying sample sizes affect the performance of ecometric models,
-focusing on both internal consistency (sensitivity) and external applicability (transferability).
-It leverages parallel processing for efficiency and uses base R plotting for visualization.
+focusing on two aspects:
+\itemize{
+\item \strong{Sensitivity (internal consistency)}: How accurately the model predicts environmental conditions
+on the same data it was trained on.
+\item \strong{Transferability (external applicability)}: How well the model performs on unseen data.
+}
+It tests different sample sizes by resampling the data multiple times (bootstrap iterations),
+training an ecometric model on each subset, and evaluating prediction error and correlation.
+}
+\details{
+Four base R plots are generated to visualize model performance as a function of sample size:
+\enumerate{
+\item \strong{Training correlation vs. Sample size:} Shows how well the model fits training data.
+\item \strong{Testing correlation vs. Sample size:} Shows generalizability to new data.
+\item \strong{Training mean anomaly vs. Sample size:} Shows average prediction error on training data.
+\item \strong{Testing mean anomaly vs. Sample size:} Shows average prediction error on test data.
+}
+
+Parallel processing is supported to speed up the analysis.
 }
 \examples{
 \dontrun{
-  results <- ecometric_sensitivity_analysis(points_df = my_data, env_var = "BIO12")
+# Load internal data
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+
+# Summarize trait values at sampling points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "sci_name",
+  continent = FALSE,
+  parallel = FALSE
+)
+
+# Run sensitivity analysis using annual precipitation (BIO12)
+sensitivityResults <- sensitivity_analysis(
+  points_df = traitsByPoint$points,
+  env_var = "BIO12",
+  sample_sizes = seq(100, 1000, 300),
+  iterations = 5,
+  transform_fun = function(x) log(x + 1),
+  parallel = FALSE  # Set to TRUE for faster performance on multicore machines
+)
+
+# View results
+head(sensitivityResults$summary_results)
 }
 }

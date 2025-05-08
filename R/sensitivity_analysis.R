@@ -1,17 +1,34 @@
-#' Perform Sensitivity Analysis on Ecometric Models
+#' Perform sensitivity analysis on ecometric models (quantitative environmental variables)
 #'
 #' This function evaluates how varying sample sizes affect the performance of ecometric models,
-#' focusing on both internal consistency (sensitivity) and external applicability (transferability).
-#' It leverages parallel processing for efficiency and uses base R plotting for visualization.
+#' focusing on two aspects:
+#' \itemize{
+#'   \item \strong{Sensitivity (internal consistency)}: How accurately the model predicts environmental conditions
+#'         on the same data it was trained on.
+#'   \item \strong{Transferability (external applicability)}: How well the model performs on unseen data.
+#' }
+#' It tests different sample sizes by resampling the data multiple times (bootstrap iterations),
+#' training an ecometric model on each subset, and evaluating prediction error and correlation.
 #'
-#' @param points_df Data frame containing ecometric data with columns: 'mean_trait', 'sd_trait',
-#'                  'count_trait', and the specified environmental variable.
+#' Four base R plots are generated to visualize model performance as a function of sample size:
+#' \enumerate{
+#'   \item \strong{Training correlation vs. Sample size:} Shows how well the model fits training data.
+#'   \item \strong{Testing correlation vs. Sample size:} Shows generalizability to new data.
+#'   \item \strong{Training mean anomaly vs. Sample size:} Shows average prediction error on training data.
+#'   \item \strong{Testing mean anomaly vs. Sample size:} Shows average prediction error on test data.
+#' }
+#'
+#' Parallel processing is supported to speed up the analysis.
+#'
+#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `mean_trait`, `sd_trait`, `count_trait`, and the environmental variable.
 #' @param env_var Name of the environmental variable column in points_df (e.g., "BIO12").
 #' @param sample_sizes Vector of sample sizes to evaluate (default: seq(100, 10000, 1000)).
 #' @param iterations Number of bootstrap iterations per sample size (default: 20).
 #' @param test_split Proportion of data to use for testing (default: 0.2).
-#' @param grid_bins_mean Number of bins for the mean trait axis (default: computed via Scott's rule).
-#' @param grid_bins_sd Number of bins for the SD trait axis (default: computed via Scott's rule).
+#' @param grid_bins_mean Number of bins for the mean trait axis. If `NULL` (default),
+#'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
+#' @param grid_bins_sd Number of bins for the SD trait axis. If `NULL` (default),
+#'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
 #' @param transform_fun Function to transform the environmental variable (default: NULL = no transformation).
 #' @param parallel Logical; whether to use parallel processing (default: TRUE).
 #' @param n_cores Number of cores to use for parallel processing (default: parallel::detectCores() - 1).
@@ -22,7 +39,34 @@
 #'
 #' @examples
 #' \dontrun{
-#' results <- ecometric_sensitivity_analysis(points_df = my_data, env_var = "BIO12")
+#' # Load internal data
+#' data("points", package = "commecometrics")
+#' data("traits", package = "commecometrics")
+#' data("polygons", package = "commecometrics")
+#'
+#' # Summarize trait values at sampling points
+#' traitsByPoint <- summarize_traits_by_point(
+#'   points_df = points,
+#'   trait_df = traits,
+#'   species_polygons = polygons,
+#'   trait_column = "RBL",
+#'   species_name_col = "sci_name",
+#'   continent = FALSE,
+#'   parallel = FALSE
+#' )
+#'
+#' # Run sensitivity analysis using annual precipitation (BIO12)
+#' sensitivityResults <- sensitivity_analysis(
+#'   points_df = traitsByPoint$points,
+#'   env_var = "BIO12",
+#'   sample_sizes = seq(100, 1000, 300),
+#'   iterations = 5,
+#'   transform_fun = function(x) log(x + 1),
+#'   parallel = FALSE  # Set to TRUE for faster performance on multicore machines
+#' )
+#'
+#' # View results
+#' head(sensitivityResults$summary_results)
 #' }
 #' @export
 sensitivity_analysis <- function(points_df,
@@ -51,6 +95,11 @@ sensitivity_analysis <- function(points_df,
   points_df <- points_df %>%
     dplyr::filter(!is.na(mean_trait) & !is.na(sd_trait)) %>%
     dplyr::filter(!is.na(.data[[env_var]]))
+
+  # Check that all sample_sizes are smaller than available data
+  if (any(sample_sizes > nrow(points_df))) {
+    stop("One or more sample sizes exceed the number of available data points (", nrow(points_df), ").")
+  }
 
   # Transform environmental variable if needed
   if (!is.null(transform_fun)) {

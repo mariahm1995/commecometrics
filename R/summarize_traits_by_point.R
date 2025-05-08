@@ -1,12 +1,12 @@
-#' Summarize Trait Distributions at Sampling Points with Optional Continent Assignment
+#' Summarize trait distributions at sampling points with optional continent assignment
 #'
 #' For each spatial sampling point, this function calculates the mean, standard deviation,
-#' and richness of a specified trait across all overlapping species polygons.
-#' Optionally, it assigns each point to a continent based on a shapefile.
+#' of a specified trait across and richness all overlapping species polygons.
+#' Optionally, it assigns each point to a continent using Natural Earth data.
 #'
 #' @param points_df A data frame containing sampling points with columns for longitude and latitude.
-#' @param trait_df A data frame of trait data. Must include a column for species names (typically 'TaxonName')
-#'                and the trait of interest (e.g., 'RBL').
+#' @param trait_df A data frame of trait data. Must include a column for species names (default = 'TaxonName')
+#'                and the trait of interest (default = "trait_name").
 #' @param species_polygons An `sf` object containing species distribution polygons. Must include a species name column.
 #' @param trait_column The name of the trait column in `trait_df` to summarize.
 #' @param species_name_col The name of the column in `species_polygons` that contains species names (default = "sci_name").
@@ -16,15 +16,45 @@
 #' @param parallel Logical; whether to parallelize the summarization step (default TRUE).
 #' @param n_cores Number of cores to use if parallelizing (default: detectCores() - 1).
 #'
-#' @return A list with:
-#'   \item{points}{The input `points_df`, updated with trait summary columns and optionally continent column.}
-#'   \item{overlap}{A list of species names overlapping each point.}
+#' @return A list with two elements:
+#' \describe{
+#'   \item{points}{A data frame identical to `points_df` but with additional columns:
+#'     \describe{
+#'       \item{mean_trait}{Mean value of the specified trait across overlapping species.}
+#'       \item{sd_trait}{Standard deviation of the trait across overlapping species.}
+#'       \item{richness}{Number of species overlapping the point (regardless of trait availability).}
+#'       \item{count_trait}{Number of species with non-missing trait values at the point.}
+#'       \item{continent}{(Optional) Continent name assigned from Natural Earth data, if `continent = TRUE`.}
+#'     }
+#'   }
+#'   \item{overlap}{A list of character vectors, each containing the names of species whose distribution polygons overlap a given sampling point.}
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Load sample data from the package
+#' data("points", package = "commecometrics")
+#' data("traits", package = "commecometrics")
+#' data("polygons", package = "commecometrics")
+#'
+#' traitsByPoint <- summarize_traits_by_point(
+#'   points_df = points,
+#'   trait_df = traits,
+#'   species_polygons = polygons,
+#'   trait_column = RBL,
+#'   species_name_col = "sci_name",
+#'   continent = FALSE,
+#'   parallel = FALSE
+#' )
+#'
+#' head(traitsByPoint$points)
+#' }
 #'
 #' @export
 summarize_traits_by_point <- function(points_df,
                                       trait_df,
                                       species_polygons,
-                                      trait_column = NULL,
+                                      trait_column = "trait_name",
                                       species_name_col = "sci_name",
                                       continent = FALSE,
                                       lon_col = "Longitude",

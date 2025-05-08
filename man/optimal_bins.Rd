@@ -13,6 +13,6 @@ optimal_bins(x)
 Integer representing the optimal number of bins.
 }
 \description{
-Calculates the optimal number of bins for histogramming a numeric vector
-based on Scott's rule, which minimizes the integrated mean squared error.
+Calculates the optimal number of bins for a numeric vector
+based on Scott's rule.
 }

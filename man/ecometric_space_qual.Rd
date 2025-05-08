@@ -2,27 +2,27 @@
 % Please edit documentation in R/ecometric_space_qual.R
 \name{ecometric_space_qual}
 \alias{ecometric_space_qual}
-\title{Plot Ecometric Space for Qualitative Traits with Optional Fossil Overlay}
+\title{Plot ecometric space for qualitative environmental variables}
 \usage{
 ecometric_space_qual(
   model_out,
   category_labels = NULL,
   palette = NULL,
   fossil_data = NULL,
-  fossil_color = "black",
+  fossil_color = "#000000",
   modern_color = "#bc4749"
 )
 }
 \arguments{
 \item{model_out}{Output from \code{ecometric_model_qualitative()}, containing environmental estimates in trait space.}
 
-\item{category_labels}{Optional named vector for category labels (for prettier plots).}
+\item{category_labels}{Optional named vector for category labels (used in the legend title). If \code{NULL}, the unique strings in the predicted category column (\code{env_est}) will be used as-is.}
 
 \item{palette}{Optional color vector for categories (must match number of categories).}
 
-\item{fossil_data}{Optional. Fossil data from \code{reconstruct_env_qualitative()}, including \code{fossil_mbc} and \code{fossil_sdc}.}
+\item{fossil_data}{Optional. Output from \code{reconstruct_env_qual()}.}
 
-\item{fossil_color}{Outline color for fossil data bins (default = "#c44536").}
+\item{fossil_color}{Outline color for fossil data bins (default = "#000000").}
 
 \item{modern_color}{Outline color for modern data bins (default: \code{"#bc4749"}).}
 }
@@ -32,6 +32,57 @@ A list containing:
 \item{probability_maps}{List of ggplots showing probability surfaces for each category.}
 }
 \description{
-Visualizes the predicted ecometric space (dominant category) and probability maps
+Visualizes the predicted ecometric space (predicted category) and probability maps
 for each category based on the output from \code{ecometric_model_qualitative()}.
+}
+\examples{
+\dontrun{
+# Load internal data
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+data("fossils", package = "commecometrics")
+
+# Summarize trait values at sampling points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "sci_name",
+  continent = FALSE,
+  parallel = FALSE
+)
+
+# Run ecometric model for qualitative variable
+ecoModelQual <- ecometric_model_qual(
+  points_df = traitsByPoint$points,
+  category_col = "DOM_NUM",
+  min_species = 3
+)
+
+# Reconstruct fossil environmental categories
+reconQual <- reconstruct_env_qual(
+  fossildata = fossils,
+  model_out = ecoModelQual,
+  match_nearest = TRUE,
+  fossil_lon = "Long",
+  fossil_lat = "Lat",
+  modern_id = "GlobalID",
+  modern_lon = "Longitude",
+  modern_lat = "Latitude"
+)
+
+# Plot qualitative ecometric space
+ecoPlotQual <- ecometric_space_qual(
+  model_out = ecoModelQual,
+  fossil_data = reconQual
+)
+
+# Display predicted category map
+print(ecoPlotQual$ecometric_space_plot)
+
+# Display one of the probability maps
+print(ecoPlotQual$probability_maps[["1"]])
+}
 }

@@ -1,0 +1,75 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# commecometrics
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+commecometrics provides tools for conducting trait-based ecometric modeling with modern and fossil data. It supports workflows for both continuous and categorical environmental variables, as well as sensitivity and transferability analysis.
+
+## Installation
+
+You can install the development version of commecometrics from [GitHub](https://github.com/) with:
+
+```{r}
+# Install devtools if you don't have it
+install.packages("devtools")
+
+# Install commecometrics from GitHub
+devtools::install_github("mariahm1995/commecometrics")
+```
+## Example
+
+This is a basic example of how use commecometrics
+
+```{r example, eval = FALSE}
+library(commecometrics)
+
+# Load example data
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+
+# Summarize trait values at points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "sci_name"
+)
+
+# Run ecometric model
+ecoModel <- ecometric_model(
+  points_df = traitsByPoint$points,
+  env_var = "BIO12",
+  transform_fun = function(x) log(x + 1),
+  inv_transform_fun = function(x) exp(x) - 1,
+  min_species = 3
+)
+
+# Plot trait–environment surface
+ecoPlot <- ecometric_space(ecoModel, env_name = "Precipitation (loge mm)")
+print(ecoPlot)
+```
+
+## Learn More
+
+See the vignette for a full walkthrough:
+
+```{r cars}
+vignette("Introduction to commecometrics")
+```

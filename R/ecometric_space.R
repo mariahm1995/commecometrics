@@ -1,21 +1,72 @@
-#' Plot Ecometric Trait Space with Optional Fossil Overlay
+#' Plot ecometric space for quantitative environmental variables
 #'
-#' Visualizes the binned trait–environment ecometric space and optionally overlays fossil trait bins.
+#' Visualizes the ecometric space for quantitative environmental variables
+#' based on the output from \code{ecometric_model()}.
 #'
 #' @param model_out Output from \code{ecometric_model()}, containing environmental estimates in trait space.
 #' @param env_name Name to display for the environmental variable (used in the legend title).
-#' @param fossil_data Optional data frame containing bin coordinates for fossil and modern data (requires columns \code{fossil_mbc}, \code{fossil_sdc}, \code{mbc}, \code{sdc}).
-#' @param fossil_color Outline color for fossil data bins (default: \code{"black"}).
+#' @param fossil_data Optional. Output from \code{reconstruct_env()}.
+#' @param fossil_color Outline color for fossil data bins (default: \code{"#000000"}).
 #' @param modern_color Outline color for modern data bins (default: \code{"#bc4749"}).
 #' @param palette Vector of colors to use for the gradient scale representing environmental values.
 #'
 #' @return A ggplot2 object visualizing the ecometric trait-environment surface.
+#' @examples
+#' \dontrun{
+#' # Load internal data
+#' data("points", package = "commecometrics")
+#' data("traits", package = "commecometrics")
+#' data("polygons", package = "commecometrics")
+#' data("fossils", package = "commecometrics")
+#'
+#' # Summarize trait values at sampling points
+#' traitsByPoint <- summarize_traits_by_point(
+#'   points_df = points,
+#'   trait_df = traits,
+#'   species_polygons = polygons,
+#'   trait_column = "RBL",
+#'   species_name_col = "sci_name",
+#'   continent = FALSE,
+#'   parallel = FALSE
+#' )
+#'
+#' # Run ecometric model
+#' ecoModel <- ecometric_model(
+#'   points_df = traitsByPoint$points,
+#'   env_var = "BIO12",
+#'   transform_fun = function(x) log(x + 1),
+#'   inv_transform_fun = function(x) exp(x) - 1,
+#'   min_species = 3
+#' )
+#'
+#' # Reconstruct environments for fossil sites
+#' recon <- reconstruct_env(
+#'   fossildata = fossils,
+#'   model_out = ecoModel,
+#'   match_nearest = TRUE,
+#'   fossil_lon = "Long",
+#'   fossil_lat = "Lat",
+#'   modern_id = "GlobalID",
+#'   modern_lon = "Longitude",
+#'   modern_lat = "Latitude"
+#' )
+#'
+#' # Plot the ecometric trait–environment space
+#' ecometricPlot <- ecometric_space(
+#'   model_out = ecoModel,
+#'   env_name = "Precipitation (loge mm)",
+#'   fossil_data = recon
+#' )
+#'
+#' # Display plot
+#' print(ecometricPlot)
+#' }
 #' @export
 
 ecometric_space <- function(model_out,
                             env_name = "Environment",
                             fossil_data = NULL,
-                            fossil_color = "black",
+                            fossil_color = "#000000",
                             modern_color = "#bc4749",
                             palette = c("#bc6c25", "#fefae0", "#606c38")) {
   # Extract model outputs

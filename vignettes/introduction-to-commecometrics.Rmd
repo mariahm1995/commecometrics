@@ -1,0 +1,155 @@
+---
+title: "Introduction-to-commecometrics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction-to-commecometrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(commecometrics)
+library(ggplot2)
+```
+## Overview
+
+The `commecometrics` package provides tools for conducting ecometric analyses using trait data, species distributions, and environmental variables. It supports workflows for both continuous and categorical environmental variables, and includes utilities for fossil data integration and sensitivity analyses.
+
+This vignette introduces the main functions and workflows available in the package.
+
+## Data Loading
+
+We use example data included in the package:
+
+```r
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+data("fossils", package = "commecometrics")
+```
+## Summarize Traits by Sampling Point
+
+We begin by summarizing trait values for each sampling location:
+
+```r
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "sci_name",
+  continent = FALSE,
+  parallel = FALSE
+)
+```
+
+## Ecometric Modeling (Continuous Variable)
+
+We model annual precipitation (BIO12) as a function of trait mean and standard deviation:
+
+```r
+ecoModel <- ecometric_model(
+  points_df = traitsByPoint$points,
+  env_var = "BIO12",
+  transform_fun = function(x) log(x + 1),
+  inv_transform_fun = function(x) exp(x) - 1,
+  min_species = 3
+)
+```
+
+## Visualize Ecometric Space
+
+```r
+ecoPlot <- ecometric_space(
+  model_out = ecoModel,
+  env_name = "Precipitation (loge mm)"
+)
+print(ecoPlot)
+```
+
+## Reconstruct Past Environments from Fossils
+
+```r
+recon <- reconstruct_env(
+  fossildata = fossils,
+  model_out = ecoModel,
+  match_nearest = TRUE,
+  fossil_lon = "Long",
+  fossil_lat = "Lat",
+  modern_id = "GlobalID",
+  modern_lon = "Longitude",
+  modern_lat = "Latitude"
+)
+
+head(recon[, c("Site", "fossil_env_est_UN", "fossil_minlimit_UN", "fossil_maxlimit_UN")])
+```
+
+## Sensitivity Analysis
+
+```r
+sensitivityResults <- sensitivity_analysis(
+  points_df = traitsByPoint$points,
+  env_var = "BIO12",
+  sample_sizes = seq(100, 1000, 300),
+  iterations = 5,
+  transform_fun = function(x) log(x + 1),
+  parallel = FALSE
+)
+
+print(sensitivityResults$summary_results)
+```
+
+## Qualitative Environmental Models
+
+```r
+ecoModelQual <- ecometric_model_qual(
+  points_df = traitsByPoint$points,
+  category_col = "DOM_NUM",
+  min_species = 3
+)
+
+reconQual <- reconstruct_env_qual(
+  fossildata = fossils,
+  model_out = ecoModelQual,
+  match_nearest = TRUE,
+  fossil_lon = "Long",
+  fossil_lat = "Lat",
+  modern_id = "GlobalID",
+  modern_lon = "Longitude",
+  modern_lat = "Latitude"
+)
+
+qualPlot <- ecometric_space_qual(
+  model_out = ecoModelQual,
+  fossil_data = reconQual
+)
+
+print(qualPlot$ecometric_space_plot)
+```
+
+## Sensitivity Analysis (Qualitative)
+
+```r
+sensitivityQual <- sensitivity_analysis_qual(
+  points_df = traitsByPoint$points,
+  category_col = "DOM_NUM",
+  sample_sizes = seq(100, 1000, 300),
+  iterations = 5,
+  parallel = FALSE
+)
+
+print(sensitivityQual$summary_results)
+```
+
+## Conclusion
+
+This vignette demonstrates the key steps in an ecometric workflow using `commecometrics`. Users can extend these examples to their own data, customizing the trait variable, environment, and fossil data as needed.
+
+For detailed help on each function, see the package documentation and individual function examples.

@@ -3,21 +3,65 @@
 #' Builds an ecometric trait space for qualitative environmental variables,
 #' estimating the most probable category and the probability of each category
 #' at each trait bin combination. Also calculates prediction accuracy
-#' and anomalies based on observed category values.
+#' and anomalies for each point.
 #'
-#' @param points_df A data frame with columns: `mean_trait`, `sd_trait`, `count_trait`, and the categorical trait.
+#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `mean_trait`, `sd_trait`, `count_trait`, and the environmental variable.
 #' @param category_col Name of the column containing the categorical trait.
-#' @param grid_bins_mean Number of bins for the trait mean axis (default = Scott's rule).
-#' @param grid_bins_sd Number of bins for the trait SD axis (default = Scott's rule).
+#' @param grid_bins_mean Number of bins for the mean trait axis. If `NULL` (default),
+#'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
+#' @param grid_bins_sd Number of bins for the SD trait axis. If `NULL` (default),
+#'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
 #' @param min_species Minimum number of species with trait data per point (default = 3).
-#'
 #' @return A list containing:
-#' \item{points_df}{Filtered input data frame with predicted and observed environmental values, bin assignments, and anomalies.}
+#' \item{points_df}{Filtered input data frame with the following added columns:
+#'   \describe{
+#'     \item{mbc}{Bin assignment code for mean trait value.}
+#'     \item{sdc}{Bin assignment code for standard deviation of trait.}
+#'     \item{env_est}{Most probable environmental category predicted for each trait bin.}
+#'     \item{prob_<category>}{Estimated probability of each environmental category per trait bin (e.g., \code{prob_1}, \code{prob_2}, etc.).}
+#'     \item{observed_probability}{Probability assigned to the observed category for each point.}
+#'     \item{predicted_probability}{Probability assigned to the predicted (most likely) category for each point.}
+#'     \item{predicted_category}{Predicted environmental category for each point.}
+#'     \item{correct_prediction}{Indicator for whether the predicted category matches the observed category (\code{"Yes"} or \code{"No"}).}
+#'     \item{anomaly}{Difference between predicted and observed category probabilities.}
+#'   }
+#' }
 #' \item{eco_space}{Raster-format data frame representing trait space bins with estimated environmental categories.}
 #' \item{diagnostics}{Summary stats about bin usage and data coverage.}
 #' \item{settings}{Metadata including the modeled trait.}
 #' \item{prediction_accuracy}{Overall percentage of correct predictions.}
 #' @importFrom stats density setNames
+#' @examples
+#' \dontrun{
+#' # Load internal data
+#' data("points", package = "commecometrics")
+#' data("traits", package = "commecometrics")
+#' data("polygons", package = "commecometrics")
+#'
+#' # Step 1: Summarize trait values at sampling points
+#' traitsByPoint <- summarize_traits_by_point(
+#'   points_df = points,
+#'   trait_df = traits,
+#'   species_polygons = polygons,
+#'   trait_column = "RBL",
+#'   species_name_col = "TaxonName",
+#'   continent = FALSE,
+#'   parallel = FALSE
+#' )
+#'
+#' # Step 2: Run ecometric model using land cover class as qualitative variable
+#' ecoModelQual <- ecometric_model_qual(
+#'   points_df = traitsByPoint$points,
+#'   category_col = "DOM_NUM",
+#'   min_species = 3
+#' )
+#'
+#' # View the percentage of correctly predicted categories
+#' print(ecoModelQual$prediction_accuracy)
+#'
+#' # Inspect the predicted vs. observed land cover category for the first few points
+#' head(ecoModelQual$points_df[, c("DOM_NUM", "predicted_category", "correct_prediction")])
+#' }
 #' @export
 ecometric_model_qual <- function(points_df,
                                  category_col,

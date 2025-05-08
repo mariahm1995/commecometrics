@@ -2,7 +2,7 @@
 % Please edit documentation in R/reconstruct_env.R
 \name{reconstruct_env}
 \alias{reconstruct_env}
-\title{Reconstruct Past Environmental Conditions Using Ecometric Trait Bins}
+\title{Reconstruct past environmental conditions using ecometric models}
 \usage{
 reconstruct_env(
   fossildata,
@@ -19,7 +19,7 @@ reconstruct_env(
 )
 }
 \arguments{
-\item{fossildata}{A data frame containing fossil trait summaries per time bin.
+\item{fossildata}{A data frame containing fossil trait summaries per fossil site.
 Must include columns for \code{Mean} and \code{SD} of the trait.}
 
 \item{model_out}{Output list from \code{run_ecometric_model()}, containing modern data, diagnostics, and model settings.}
@@ -35,7 +35,7 @@ Default is \code{exp(x) - 1}. If \code{NULL}, the inverse transform stored in \c
 
 \item{fossil_lat}{Name of the latitude column in \code{fossildata}. Required if \code{match_nearest = TRUE}.}
 
-\item{modern_id}{Name of the unique identifier column in modern points (e.g., "GlobalID").}
+\item{modern_id}{Name of the unique ID column in modern points (e.g., "GlobalID").}
 
 \item{modern_lon}{Name of the longitude column in modern points. Required if \code{match_nearest = TRUE}.}
 
@@ -44,19 +44,65 @@ Default is \code{exp(x) - 1}. If \code{NULL}, the inverse transform stored in \c
 \item{crs_proj}{Coordinate reference system to use when converting fossil and modern data to sf format (default = EPSG:4326).}
 }
 \value{
-A data frame (\code{fossildata}) updated with fossil-specific environmental estimates and optionally nearest modern site information.
+A data frame (\code{fossildata}) with reconstructed environmental values and optional nearest modern point data. Includes the following additional columns:
+\describe{
+\item{fossil_mbc}{Assigned bin number for mean trait (based on fossil trait mean).}
+\item{fossil_sdc}{Assigned bin number for SD trait (based on fossil trait SD).}
+\item{fossil_env_est}{Maximum likelihood estimate of the environmental variable (on transformed scale if applicable).}
+\item{fossil_minlimit}{Lower bound of the confidence interval around the environmental estimate (transformed scale).}
+\item{fossil_maxlimit}{Upper bound of the confidence interval around the environmental estimate (transformed scale).}
+\item{fossil_env_est_UN}{(Optional) Inverse-transformed environmental estimate, on the original scale.}
+\item{fossil_minlimit_UN}{(Optional) Inverse-transformed lower bound of the confidence interval.}
+\item{fossil_maxlimit_UN}{(Optional) Inverse-transformed upper bound of the confidence interval.}
+\item{nearest_modern_point}{(Optional) ID of the nearest modern sampling point (if \code{match_nearest = TRUE}).}
+\item{...}{Additional columns from the matched modern site if \code{match_nearest = TRUE} (e.g., observed environmental values).}
+}
 }
 \description{
-This function uses fossil community trait summaries (mean and SD) to reconstruct
+Uses fossil community trait summaries (mean and SD) to reconstruct
 past environmental conditions by projecting them onto a binned ecometric trait space
 built from modern data. Optionally, it also assigns each fossil point to the nearest
 modern sampling site to retrieve observed environmental data.
 }
-\details{
-\itemize{
-\item Fossil trait values must be pre-aggregated at the desired time scale (e.g., per fossil locality or assemblage).
-\item The method uses kernel density estimation to predict the most likely environmental condition for each fossil community.
-\item Confidence intervals are calculated as a fixed-width window around the maximum likelihood value.
-\item When matching fossils to modern sites, geographic coordinates must be provided and both datasets are internally reprojected to \code{crs_proj}.
+\examples{
+\dontrun{
+# Load internal data
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+data("fossils", package = "commecometrics")
+
+# Step 1: Summarize modern trait values at sampling points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "sci_name",
+  continent = FALSE,
+  parallel = FALSE
+)
+
+# Step 2: Run an ecometric model with BIO12 (precipitation)
+ecoModel <- ecometric_model(
+  points_df = traitsByPoint$points,
+  env_var = "BIO12",
+  transform_fun = function(x) log(x + 1),
+  inv_transform_fun = function(x) exp(x) - 1,
+  min_species = 3
+)
+
+# Step 3: Reconstruct fossil environments
+recon <- reconstruct_env(
+  fossildata = fossils,
+  model_out = ecoModel,
+  match_nearest = TRUE,
+  fossil_lon = "Long",
+  fossil_lat = "Lat",
+  modern_id = "GlobalID",
+  modern_lon = "Longitude",
+  modern_lat = "Latitude"
+)
+
 }
 }

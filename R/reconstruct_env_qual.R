@@ -1,11 +1,12 @@
-#' Reconstruct Past Qualitative Environmental Categories Using Ecometric Trait Bins
+#' Reconstruct past qualitative environmental categories using ecometric models
 #'
-#' This function uses fossil community trait summaries (mean and SD) to reconstruct
+#' Uses fossil community trait summaries (mean and SD) to reconstruct
 #' the most probable environmental category by projecting them onto a qualitative ecometric space
 #' built from modern data. Optionally, it assigns each fossil point to the nearest modern sampling point.
 #'
-#' @param fossildata A data frame containing fossil trait summaries (must include columns `Mean` and `SD`).
-#' @param model_out Output from \code{ecometric_model_qualitative()}.
+#' @param fossildata A data frame containing fossil trait summaries per fossil site.
+#'                   Must include columns for `Mean` and `SD` of the trait.
+#' @param model_out Output list from \code{ecometric_model_qual()}, containing modern data, diagnostics, and model settings.
 #' @param match_nearest Logical; if TRUE, matches each fossil to the nearest modern point (default = TRUE).
 #' @param fossil_lon Name of the longitude column in `fossildata`. Required if \code{match_nearest = TRUE}.
 #' @param fossil_lat Name of the latitude column in `fossildata`. Required if \code{match_nearest = TRUE}.
@@ -15,13 +16,52 @@
 #' @param crs_proj Coordinate reference system for sf operations (default = EPSG:4326).
 #'
 #' @return A data frame (`fossildata`) updated with:
-#' \itemize{
-#'   \item Fossil bin assignments (fossil_mbc, fossil_sdc).
-#'   \item Predicted environmental category (fossil_env_est).
-#'   \item Probabilities for each category (fossil_prob_*).
-#'   \item Nearest modern site metadata (optional).
+#' \describe{
+#'   \item{fossil_mbc}{Assigned bin number for mean trait (based on fossil trait mean).}
+#'   \item{fossil_sdc}{Assigned bin number for SD trait (based on fossil trait SD).}
+#'   \item{fossil_env_est}{Predicted environmental category based on trait bin.}
+#'   \item{fossil_prob_*}{Probability of each environmental category for the assigned bin.}
+#'   \item{nearest_modern_point}{(Optional) ID of the nearest modern sampling point (if \code{match_nearest = TRUE}).}
+#'   \item{...}{Additional columns from the matched modern site if \code{match_nearest = TRUE}.}
 #' }
+#' @examples
+#' \dontrun{
+#' # Load internal data
+#' data("points", package = "commecometrics")
+#' data("traits", package = "commecometrics")
+#' data("polygons", package = "commecometrics")
+#' data("fossils", package = "commecometrics")
 #'
+#' # Step 1: Summarize trait values at sampling points
+#' traitsByPoint <- summarize_traits_by_point(
+#'   points_df = points,
+#'   trait_df = traits,
+#'   species_polygons = polygons,
+#'   trait_column = "RBL",
+#'   species_name_col = "sci_name",
+#'   continent = FALSE,
+#'   parallel = FALSE
+#' )
+#'
+#' # Step 2: Run a qualitative ecometric model (e.g., land cover class)
+#' ecoModelQual <- ecometric_model_qual(
+#'   points_df = traitsByPoint$points,
+#'   category_col = "DOM_NUM",
+#'   min_species = 3
+#' )
+#'
+#' # Step 3: Reconstruct qualitative environments for fossil data
+#' reconQual <- reconstruct_env_qual(
+#'   fossildata = fossils,
+#'   model_out = ecoModelQual,
+#'   match_nearest = TRUE,
+#'   fossil_lon = "Long",
+#'   fossil_lat = "Lat",
+#'   modern_id = "GlobalID",
+#'   modern_lon = "Longitude",
+#'   modern_lat = "Latitude"
+#' )
+#' }
 #' @export
 reconstruct_env_qual <- function(fossildata,
                                  model_out,
@@ -43,7 +83,8 @@ reconstruct_env_qual <- function(fossildata,
   fossildata$fossilmbc <- .bincode(fossildata$Mean, breaks = mbrks)
   fossildata$fossilsdc <- .bincode(fossildata$SD, breaks = sdbrks)
 
-  predictions <- list()
+  # Predict environmental category and probabilities for each fossil
+  predictions <- vector("list", nrow(fossildata))
 
   for (i in seq_len(nrow(fossildata))) {
     mb <- fossildata$fossilmbc[i]
@@ -52,22 +93,28 @@ reconstruct_env_qual <- function(fossildata,
     if (!is.na(mb) && !is.na(sd)) {
       pred_row <- eco_space %>% dplyr::filter(mbc == mb, sdc == sd)
 
-      if (nrow(pred_row) == 1) {
-        predictions[[i]] <- pred_row
+      if (nrow(pred_row) >= 1) {
+        predictions[[i]] <- pred_row[1, , drop = FALSE]
       } else {
-        predictions[[i]] <- tibble::tibble(env_est = NA)
+        empty <- tibble::tibble(mbc = mb, sdc = sd, env_est = NA)
+        prob_cols <- grep("^prob_", names(eco_space), value = TRUE)
+        for (col in prob_cols) empty[[col]] <- NA_real_
+        predictions[[i]] <- empty
       }
     } else {
-      predictions[[i]] <- tibble::tibble(env_est = NA)
+      empty <- tibble::tibble(mbc = NA_integer_, sdc = NA_integer_, env_est = NA)
+      prob_cols <- grep("^prob_", names(eco_space), value = TRUE)
+      for (col in prob_cols) empty[[col]] <- NA_real_
+      predictions[[i]] <- empty
     }
   }
 
   fossil_predictions <- dplyr::bind_rows(predictions)
 
-  # Combine fossil with prediction results, excluding redundant bin columns
+  # Combine fossil data with predictions
   fossildata <- dplyr::bind_cols(fossildata, fossil_predictions[, -(1:2)])
 
-  # Rename fossil columns for clean naming
+  # Rename for clarity
   fossildata <- fossildata %>%
     dplyr::rename(
       fossil_mbc = fossilmbc,
@@ -75,16 +122,16 @@ reconstruct_env_qual <- function(fossildata,
       fossil_env_est = env_est
     )
 
-  # Rename probability columns too
+  # Rename probability columns
   prob_cols <- grep("^prob_", names(fossildata), value = TRUE)
-
   if (length(prob_cols) > 0) {
     names(fossildata)[names(fossildata) %in% prob_cols] <- paste0("fossil_", prob_cols)
   }
 
-  # Optional: match fossils to nearest modern points
+  # Match to nearest modern point (optional)
   if (match_nearest) {
-    if (is.null(fossil_lon) || is.null(fossil_lat) || is.null(modern_id) || is.null(modern_lon) || is.null(modern_lat)) {
+    if (is.null(fossil_lon) || is.null(fossil_lat) || is.null(modern_id) ||
+        is.null(modern_lon) || is.null(modern_lat)) {
       stop("When matching nearest, please provide fossil_lon, fossil_lat, modern_id, modern_lon, and modern_lat.")
     }
 

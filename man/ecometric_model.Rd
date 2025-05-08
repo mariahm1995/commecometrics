@@ -15,7 +15,7 @@ ecometric_model(
 )
 }
 \arguments{
-\item{points_df}{A data frame with columns: \code{mean_trait}, \code{sd_trait}, \code{count_trait}, and the environmental variable.}
+\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{mean_trait}, \code{sd_trait}, \code{count_trait}, and the environmental variable.}
 
 \item{env_var}{Name of the environmental variable (e.g., "BIO12").}
 
@@ -23,15 +23,27 @@ ecometric_model(
 
 \item{inv_transform_fun}{Optional inverse transformation for environmental variable (e.g., \code{exp(x) - 1}).}
 
-\item{grid_bins_mean}{Number of bins for the mean trait axis (default: computed via Scott's rule).}
+\item{grid_bins_mean}{Number of bins for the mean trait axis. If \code{NULL} (default),
+the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
-\item{grid_bins_sd}{Number of bins for the SD trait axis (default: computed via Scott's rule).}
+\item{grid_bins_sd}{Number of bins for the SD trait axis. If \code{NULL} (default),
+the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
 \item{min_species}{Minimum number of species per point (default = 3).}
 }
 \value{
 A list containing:
-\item{points_df}{Filtered input data frame with predicted and observed environmental values, bin assignments, and anomalies.}
+\item{points_df}{Filtered input data frame with the following added columns:
+\describe{
+\item{env_trans}{Transformed environmental variable (if a transformation function is used).}
+\item{mbc}{Bin assignment code for mean trait value.}
+\item{sdc}{Bin assignment code for standard deviation of trait.}
+\item{env_est}{Predicted (maximum likelihood) environmental value on transformed scale.}
+\item{env_anom}{Difference between observed and predicted environmental values (transformed scale).}
+\item{env_est_UN}{Inverse-transformed predicted value (if \code{inv_transform_fun} is provided).}
+\item{env_anom_UN}{Inverse-transformed anomaly value (if \code{inv_transform_fun} is provided).}
+}
+}
 \item{eco_space}{Raster-format data frame representing trait space bins with estimated environmental values.}
 \item{model}{Linear model object (\code{lm}) relating predicted environmental values to observed environmental values (transformed scale when used).}
 \item{correlation}{Output from \code{cor.test}, reporting the Pearson correlation between predicted and observed environmental values (transformed scale when used).}
@@ -42,5 +54,38 @@ A list containing:
 \description{
 Builds an ecometric trait space for quantitative environmental variables,
 estimating environmental values in binned ecometric trait space. Also
-calculates anomalies based on observed values.
+calculates anomalies based on observed values for each point.
+}
+\examples{
+\dontrun{
+# Load internal dataset
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+
+# Summarize trait values at sampling points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "TaxonName",
+  continent = FALSE,
+  parallel = FALSE
+)
+
+# Fit an ecometric model using annual precipitation (BIO12)
+modelResult <- ecometric_model(
+  points_df = traitsByPoint$points,
+  env_var = "BIO12",
+  transform_fun = function(x) log(x + 1),
+  inv_transform_fun = function(x) exp(x) - 1,
+  min_species = 3
+)
+
+# View correlation between predicted and observed values
+print(eco_model$correlation)
+# View summary of the linear model fit
+summary(eco_model$model)
+}
 }

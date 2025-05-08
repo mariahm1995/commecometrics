@@ -2,7 +2,7 @@
 % Please edit documentation in R/reconstruct_env_qual.R
 \name{reconstruct_env_qual}
 \alias{reconstruct_env_qual}
-\title{Reconstruct Past Qualitative Environmental Categories Using Ecometric Trait Bins}
+\title{Reconstruct past qualitative environmental categories using ecometric models}
 \usage{
 reconstruct_env_qual(
   fossildata,
@@ -17,9 +17,10 @@ reconstruct_env_qual(
 )
 }
 \arguments{
-\item{fossildata}{A data frame containing fossil trait summaries (must include columns \code{Mean} and \code{SD}).}
+\item{fossildata}{A data frame containing fossil trait summaries per fossil site.
+Must include columns for \code{Mean} and \code{SD} of the trait.}
 
-\item{model_out}{Output from \code{ecometric_model_qualitative()}.}
+\item{model_out}{Output list from \code{ecometric_model_qual()}, containing modern data, diagnostics, and model settings.}
 
 \item{match_nearest}{Logical; if TRUE, matches each fossil to the nearest modern point (default = TRUE).}
 
@@ -37,15 +38,56 @@ reconstruct_env_qual(
 }
 \value{
 A data frame (\code{fossildata}) updated with:
-\itemize{
-\item Fossil bin assignments (fossil_mbc, fossil_sdc).
-\item Predicted environmental category (fossil_env_est).
-\item Probabilities for each category (fossil_prob_*).
-\item Nearest modern site metadata (optional).
+\describe{
+\item{fossil_mbc}{Assigned bin number for mean trait (based on fossil trait mean).}
+\item{fossil_sdc}{Assigned bin number for SD trait (based on fossil trait SD).}
+\item{fossil_env_est}{Predicted environmental category based on trait bin.}
+\item{fossil_prob_*}{Probability of each environmental category for the assigned bin.}
+\item{nearest_modern_point}{(Optional) ID of the nearest modern sampling point (if \code{match_nearest = TRUE}).}
+\item{...}{Additional columns from the matched modern site if \code{match_nearest = TRUE}.}
 }
 }
 \description{
-This function uses fossil community trait summaries (mean and SD) to reconstruct
+Uses fossil community trait summaries (mean and SD) to reconstruct
 the most probable environmental category by projecting them onto a qualitative ecometric space
 built from modern data. Optionally, it assigns each fossil point to the nearest modern sampling point.
+}
+\examples{
+\dontrun{
+# Load internal data
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+data("fossils", package = "commecometrics")
+
+# Step 1: Summarize trait values at sampling points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "sci_name",
+  continent = FALSE,
+  parallel = FALSE
+)
+
+# Step 2: Run a qualitative ecometric model (e.g., land cover class)
+ecoModelQual <- ecometric_model_qual(
+  points_df = traitsByPoint$points,
+  category_col = "DOM_NUM",
+  min_species = 3
+)
+
+# Step 3: Reconstruct qualitative environments for fossil data
+reconQual <- reconstruct_env_qual(
+  fossildata = fossils,
+  model_out = ecoModelQual,
+  match_nearest = TRUE,
+  fossil_lon = "Long",
+  fossil_lat = "Lat",
+  modern_id = "GlobalID",
+  modern_lon = "Longitude",
+  modern_lat = "Latitude"
+)
+}
 }

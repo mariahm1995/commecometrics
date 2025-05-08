@@ -2,7 +2,7 @@
 % Please edit documentation in R/sensitivity_analysis_qual.R
 \name{sensitivity_analysis_qual}
 \alias{sensitivity_analysis_qual}
-\title{Perform Sensitivity Analysis on Qualitative Ecometric Models}
+\title{Perform sensitivity analysis on ecometric models (qualitative environmental variables)}
 \usage{
 sensitivity_analysis_qual(
   points_df,
@@ -17,7 +17,7 @@ sensitivity_analysis_qual(
 )
 }
 \arguments{
-\item{points_df}{Data frame containing ecometric points with mean_trait, sd_trait, count_trait, and the categorical trait.}
+\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{mean_trait}, \code{sd_trait}, \code{count_trait}, and the environmental variable.}
 
 \item{category_col}{Name of the column containing the categorical trait.}
 
@@ -27,9 +27,11 @@ sensitivity_analysis_qual(
 
 \item{test_split}{Proportion of data to use for testing (default = 0.2).}
 
-\item{grid_bins_mean}{Number of bins for the mean trait axis (default: computed via Scott's rule).}
+\item{grid_bins_mean}{Number of bins for the mean trait axis. If \code{NULL} (default),
+the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
-\item{grid_bins_sd}{Number of bins for the SD trait axis (default: computed via Scott's rule).}
+\item{grid_bins_sd}{Number of bins for the SD trait axis. If \code{NULL} (default),
+the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
 \item{parallel}{Logical; whether to run iterations in parallel (default = TRUE).}
 
@@ -41,6 +43,53 @@ A list containing:
 \item{summary_results}{Mean accuracy per sample size.}
 }
 \description{
-This function evaluates how varying sample sizes affect the prediction accuracy
-of categorical ecometric models.
+This function evaluates how varying sample sizes affect the performance of ecometric models,
+focusing on two aspects:
+\itemize{
+\item \strong{Sensitivity (internal consistency)}: How accurately the model predicts environmental conditions
+on the same data it was trained on.
+\item \strong{Transferability (external applicability)}: How well the model performs on unseen data.
+}
+It tests different sample sizes by resampling the data multiple times (bootstrap iterations),
+training an ecometric model on each subset, and evaluating prediction error and correlation.
+}
+\details{
+Two plots are generated:
+\enumerate{
+\item \strong{Training Accuracy vs. Sample size:} Reflects internal model consistency.
+\item \strong{Testing Accuracy vs. Sample size:} Reflects external model performance.
+}
+
+Parallel processing is supported to speed up the analysis.
+}
+\examples{
+\dontrun{
+# Load internal data
+data("points", package = "commecometrics")
+data("traits", package = "commecometrics")
+data("polygons", package = "commecometrics")
+
+# Summarize trait values at sampling points
+traitsByPoint <- summarize_traits_by_point(
+  points_df = points,
+  trait_df = traits,
+  species_polygons = polygons,
+  trait_column = "RBL",
+  species_name_col = "sci_name",
+  continent = FALSE,
+  parallel = FALSE
+)
+
+# Run sensitivity analysis for dominant land cover class
+sensitivityQual <- sensitivity_analysis_qual(
+  points_df = traitsByPoint$points,
+  category_col = "DOM_NUM",
+  sample_sizes = seq(100, 1000, 300),
+  iterations = 5,
+  parallel = FALSE
+)
+
+# View results
+head(sensitivityQual$summary_results)
+}
 }

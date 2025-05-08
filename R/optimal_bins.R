@@ -1,7 +1,7 @@
 #' Determine optimal number of bins using Scott's Rule
 #'
-#' Calculates the optimal number of bins for histogramming a numeric vector
-#' based on Scott's rule, which minimizes the integrated mean squared error.
+#' Calculates the optimal number of bins for a numeric vector
+#' based on Scott's rule.
 #'
 #' @param x Numeric vector of trait values (e.g., mean_trait or sd_trait).
 #' @return Integer representing the optimal number of bins.

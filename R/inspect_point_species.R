@@ -1,9 +1,8 @@
-#' Inspect Overlapping Species at Sampling Points
+#' Inspect overlapping species at sampling points
 #'
-#' Creates an interactive map to verify species overlap at selected points,
-#' highlighting suspicious points (e.g., points with too few species).
+#' Creates an interactive map to verify species overlap at selected points.
 #'
-#' @param res_list Output list from \code{summarize_traits_by_point()}, containing \code{points} and \code{overlap}.
+#' @param traits_summary A list output from `summarize_traits_by_point()`, containing summarized trait values (`$points`) and species overlaps (`$overlap`)..
 #' @param point_ids Optional. A vector of specific point IDs to inspect. If NULL, selects \code{n_random} points at random.
 #' @param n_random Number of random points to inspect if \code{point_ids} not provided (default = 10).
 #' @param lon_col Name of the longitude column in \code{points} (default = "Longitude").
@@ -15,8 +14,35 @@
 #' @return An interactive leaflet map showing selected points with species list popups.
 #'
 #' @import leaflet
+#'
+#' @examples
+#' \dontrun{
+#' # Load sample data from the package
+#' data("points", package = "commecometrics")
+#' data("traits", package = "commecometrics")
+#' data("polygons", package = "commecometrics")
+#'
+#' # Summarize traits at points
+#' traitsByPoint <- summarize_traits_by_point(
+#'   points_df = points,
+#'   trait_df = traits,
+#'   species_polygons = polygons,
+#'   trait_column = "RBL",
+#'   species_name_col = "TaxonName",
+#'   continent = FALSE,
+#'   parallel = FALSE
+#' )
+#'
+#' # Visualize a random sample of 10 points
+#' inspect_point_species(
+#'   traits_summary = traitsByPoint,
+#'   n_random = 10,
+#'   min_species_valid = 3
+#' )
+#' }
 #' @export
-inspect_point_species <- function(res_list,
+#'
+inspect_point_species <- function(traits_summary,
                                   point_ids = NULL,
                                   n_random = 10,
                                   lon_col = "Longitude",
@@ -24,8 +50,8 @@ inspect_point_species <- function(res_list,
                                   ID_col = "GlobalID",
                                   min_species_valid = 3,
                                   env_var = NULL) {
-  points_df <- res_list$points
-  species_overlap <- res_list$overlap
+  points_df <- traits_summary$points
+  species_overlap <- traits_summary$overlap
 
   # Determine which points to inspect
   if (is.null(point_ids)) {

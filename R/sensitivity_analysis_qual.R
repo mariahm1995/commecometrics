@@ -1,15 +1,32 @@
-#' Perform Sensitivity Analysis on Qualitative Ecometric Models
+#' Perform sensitivity analysis on ecometric models (qualitative environmental variables)
 #'
-#' This function evaluates how varying sample sizes affect the prediction accuracy
-#' of categorical ecometric models.
+#' This function evaluates how varying sample sizes affect the performance of ecometric models,
+#' focusing on two aspects:
+#' \itemize{
+#'   \item \strong{Sensitivity (internal consistency)}: How accurately the model predicts environmental conditions
+#'         on the same data it was trained on.
+#'   \item \strong{Transferability (external applicability)}: How well the model performs on unseen data.
+#' }
+#' It tests different sample sizes by resampling the data multiple times (bootstrap iterations),
+#' training an ecometric model on each subset, and evaluating prediction error and correlation.
 #'
-#' @param points_df Data frame containing ecometric points with mean_trait, sd_trait, count_trait, and the categorical trait.
+#' Two plots are generated:
+#' \enumerate{
+#'   \item \strong{Training Accuracy vs. Sample size:} Reflects internal model consistency.
+#'   \item \strong{Testing Accuracy vs. Sample size:} Reflects external model performance.
+#' }
+#'
+#' Parallel processing is supported to speed up the analysis.
+#'
+#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `mean_trait`, `sd_trait`, `count_trait`, and the environmental variable.
 #' @param category_col Name of the column containing the categorical trait.
 #' @param sample_sizes Vector of sample sizes to evaluate (default = seq(100, 10000, 1000)).
 #' @param iterations Number of bootstrap iterations per sample size (default = 20).
 #' @param test_split Proportion of data to use for testing (default = 0.2).
-#' @param grid_bins_mean Number of bins for the mean trait axis (default: computed via Scott's rule).
-#' @param grid_bins_sd Number of bins for the SD trait axis (default: computed via Scott's rule).
+#' @param grid_bins_mean Number of bins for the mean trait axis. If `NULL` (default),
+#'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
+#' @param grid_bins_sd Number of bins for the SD trait axis. If `NULL` (default),
+#'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
 #' @param parallel Logical; whether to run iterations in parallel (default = TRUE).
 #' @param n_cores Number of cores for parallelization (default = detectCores() - 1).
 #'
@@ -17,6 +34,36 @@
 #'   \item{combined_results}{All raw iteration results.}
 #'   \item{summary_results}{Mean accuracy per sample size.}
 #'
+#' @examples
+#' \dontrun{
+#' # Load internal data
+#' data("points", package = "commecometrics")
+#' data("traits", package = "commecometrics")
+#' data("polygons", package = "commecometrics")
+#'
+#' # Summarize trait values at sampling points
+#' traitsByPoint <- summarize_traits_by_point(
+#'   points_df = points,
+#'   trait_df = traits,
+#'   species_polygons = polygons,
+#'   trait_column = "RBL",
+#'   species_name_col = "sci_name",
+#'   continent = FALSE,
+#'   parallel = FALSE
+#' )
+#'
+#' # Run sensitivity analysis for dominant land cover class
+#' sensitivityQual <- sensitivity_analysis_qual(
+#'   points_df = traitsByPoint$points,
+#'   category_col = "DOM_NUM",
+#'   sample_sizes = seq(100, 1000, 300),
+#'   iterations = 5,
+#'   parallel = FALSE
+#' )
+#'
+#' # View results
+#' head(sensitivityQual$summary_results)
+#' }
 #' @export
 sensitivity_analysis_qual <- function(points_df,
                                       category_col,
@@ -48,6 +95,11 @@ sensitivity_analysis_qual <- function(points_df,
   # Remove points with missing traits or environment
   points_df <- points_df %>%
     dplyr::filter(!is.na(mean_trait), !is.na(sd_trait), !is.na(.data[[category_col]]))
+
+  # Check that all sample_sizes are smaller than available data
+  if (any(sample_sizes > nrow(points_df))) {
+    stop("One or more sample sizes exceed the number of available data points (", nrow(points_df), ").")
+  }
 
   # Define single iteration function
   single_iteration <- function(sample_size, iteration) {
