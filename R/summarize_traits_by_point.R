@@ -153,6 +153,7 @@ summarize_traits_by_point <- function(points_df,
 
     points_sf <- sf::st_as_sf(points_df, coords = c(lon_col, lat_col), crs = sf::st_crs(continent_shp))
     joined <- sf::st_join(points_sf, continent_shp, left = TRUE)
+    points_df$continent <- joined$continent
   }
   return(list(
     points = points_df,
