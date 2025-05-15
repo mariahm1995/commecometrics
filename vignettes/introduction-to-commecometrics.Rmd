@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(commecometrics)
 library(ggplot2)
 ```
+
 ## Overview
 
 The `commecometrics` package provides tools for conducting ecometric analyses using trait data, species distributions, and environmental variables. It supports workflows for both continuous and categorical environmental variables, and includes utilities for fossil data integration and sensitivity analyses.
@@ -28,17 +29,18 @@ This vignette introduces the main functions and workflows available in the packa
 
 We use example data included in the package:
 
-```r
+``` r
 data("points", package = "commecometrics")
 data("traits", package = "commecometrics")
 data("polygons", package = "commecometrics")
 data("fossils", package = "commecometrics")
 ```
+
 ## Summarize Traits by Sampling Point
 
 We begin by summarizing trait values for each sampling location:
 
-```r
+``` r
 traitsByPoint <- summarize_traits_by_point(
   points_df = points,
   trait_df = traits,
@@ -54,7 +56,7 @@ traitsByPoint <- summarize_traits_by_point(
 
 We model annual precipitation (BIO12) as a function of trait mean and standard deviation:
 
-```r
+``` r
 ecoModel <- ecometric_model(
   points_df = traitsByPoint$points,
   env_var = "BIO12",
@@ -66,7 +68,7 @@ ecoModel <- ecometric_model(
 
 ## Visualize Ecometric Space
 
-```r
+``` r
 ecoPlot <- ecometric_space(
   model_out = ecoModel,
   env_name = "Precipitation (loge mm)"
@@ -76,7 +78,7 @@ print(ecoPlot)
 
 ## Reconstruct Past Environments from Fossils
 
-```r
+``` r
 recon <- reconstruct_env(
   fossildata = fossils,
   model_out = ecoModel,
@@ -93,7 +95,7 @@ head(recon[, c("Site", "fossil_env_est_UN", "fossil_minlimit_UN", "fossil_maxlim
 
 ## Sensitivity Analysis
 
-```r
+``` r
 sensitivityResults <- sensitivity_analysis(
   points_df = traitsByPoint$points,
   env_var = "BIO12",
@@ -108,7 +110,7 @@ print(sensitivityResults$summary_results)
 
 ## Qualitative Environmental Models
 
-```r
+``` r
 ecoModelQual <- ecometric_model_qual(
   points_df = traitsByPoint$points,
   category_col = "DOM_NUM",
@@ -136,7 +138,7 @@ print(qualPlot$ecometric_space_plot)
 
 ## Sensitivity Analysis (Qualitative)
 
-```r
+``` r
 sensitivityQual <- sensitivity_analysis_qual(
   points_df = traitsByPoint$points,
   category_col = "DOM_NUM",

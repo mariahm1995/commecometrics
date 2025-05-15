@@ -20,7 +20,7 @@ summarize_traits_by_point(
 \arguments{
 \item{points_df}{A data frame containing sampling points with columns for longitude and latitude.}
 
-\item{trait_df}{A data frame of trait data. Must include a column for species names (default = 'TaxonName')
+\item{trait_df}{A data frame of trait data. Must include a column for species names ('TaxonName')
 and the trait of interest (default = "trait_name").}
 
 \item{species_polygons}{An \code{sf} object containing species distribution polygons. Must include a species name column.}
@@ -70,7 +70,7 @@ traitsByPoint <- summarize_traits_by_point(
   points_df = points,
   trait_df = traits,
   species_polygons = polygons,
-  trait_column = RBL,
+  trait_column = "RBL",
   species_name_col = "sci_name",
   continent = FALSE,
   parallel = FALSE

@@ -201,8 +201,7 @@ sensitivity_analysis <- function(points_df,
     cl <- parallel::makeCluster(n_cores)
     parallel::clusterExport(cl, varlist = c(
       "points_df", "env_var", "transform_fun", "test_split",
-      "grid_bins_mean_train", "grid_bins_sd_train", "iterations",
-      "single_iteration", "optimal_bins"
+      "iterations", "single_iteration", "optimal_bins"
     ), envir = environment())
     parallel::clusterEvalQ(cl, library(stats))
 

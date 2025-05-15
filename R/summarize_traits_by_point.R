@@ -5,7 +5,7 @@
 #' Optionally, it assigns each point to a continent using Natural Earth data.
 #'
 #' @param points_df A data frame containing sampling points with columns for longitude and latitude.
-#' @param trait_df A data frame of trait data. Must include a column for species names (default = 'TaxonName')
+#' @param trait_df A data frame of trait data. Must include a column for species names ('TaxonName')
 #'                and the trait of interest (default = "trait_name").
 #' @param species_polygons An `sf` object containing species distribution polygons. Must include a species name column.
 #' @param trait_column The name of the trait column in `trait_df` to summarize.
