@@ -1,13 +1,14 @@
 test_that("ecometric_space_qual returns a valid ggplot list structure", {
-  data("points", package = "commecometrics")
+
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
   data("fossils", package = "commecometrics")
 
   traitsByPoint <- summarize_traits_by_point(
-    points_df = points,
+    points_df = geoPoints,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -16,7 +17,7 @@ test_that("ecometric_space_qual returns a valid ggplot list structure", {
 
   ecoModelQual <- ecometric_model_qual(
     points_df = traitsByPoint$points,
-    category_col = "DOM_NUM",
+    category_col = "vegetation",
     min_species = 3
   )
 
@@ -26,7 +27,7 @@ test_that("ecometric_space_qual returns a valid ggplot list structure", {
     match_nearest = TRUE,
     fossil_lon = "Long",
     fossil_lat = "Lat",
-    modern_id = "GlobalID",
+    modern_id = "ID",
     modern_lon = "Longitude",
     modern_lat = "Latitude"
   )

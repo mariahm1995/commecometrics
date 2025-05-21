@@ -6,7 +6,7 @@
 \usage{
 ecometric_space(
   model_out,
-  env_name = "Environment",
+  env_name = "env_var",
   fossil_data = NULL,
   fossil_color = "#000000",
   modern_color = "#bc4749",
@@ -36,16 +36,16 @@ based on the output from \code{ecometric_model()}.
 \examples{
 \dontrun{
 # Load internal data
-data("points", package = "commecometrics")
+data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
-data("polygons", package = "commecometrics")
+data("spRanges", package = "commecometrics")
 data("fossils", package = "commecometrics")
 
 # Summarize trait values at sampling points
 traitsByPoint <- summarize_traits_by_point(
-  points_df = points,
+  points_df = geoPoints,
   trait_df = traits,
-  species_polygons = polygons,
+  species_polygons = spRanges,
   trait_column = "RBL",
   species_name_col = "sci_name",
   continent = FALSE,
@@ -55,7 +55,7 @@ traitsByPoint <- summarize_traits_by_point(
 # Run ecometric model
 ecoModel <- ecometric_model(
   points_df = traitsByPoint$points,
-  env_var = "BIO12",
+  env_var = "precip",
   transform_fun = function(x) log(x + 1),
   inv_transform_fun = function(x) exp(x) - 1,
   min_species = 3
@@ -68,7 +68,7 @@ recon <- reconstruct_env(
   match_nearest = TRUE,
   fossil_lon = "Long",
   fossil_lat = "Lat",
-  modern_id = "GlobalID",
+  modern_id = "ID",
   modern_lon = "Longitude",
   modern_lat = "Latitude"
 )
@@ -76,7 +76,7 @@ recon <- reconstruct_env(
 # Plot the ecometric trait–environment space
 ecometricPlot <- ecometric_space(
   model_out = ecoModel,
-  env_name = "Precipitation (loge mm)",
+  env_name = "Precipitation (log mm)",
   fossil_data = recon
 )
 

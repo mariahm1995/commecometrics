@@ -2,14 +2,14 @@ test_that("sensitivity_analysis_qual returns expected structure", {
   skip_on_cran()
   skip_if_not_installed("commecometrics")
 
-  data("points", package = "commecometrics")
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
 
   traitsByPoint <- summarize_traits_by_point(
-    points_df = points,
+    points_df = geoPoints,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -18,7 +18,7 @@ test_that("sensitivity_analysis_qual returns expected structure", {
 
   out <- sensitivity_analysis_qual(
     points_df = traitsByPoint$points,
-    category_col = "DOM_NUM",
+    category_col = "vegetation",
     sample_sizes = c(20, 30),
     iterations = 2,
     parallel = FALSE

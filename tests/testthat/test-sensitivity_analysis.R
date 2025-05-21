@@ -1,14 +1,14 @@
 test_that("sensitivity_analysis returns valid structure", {
   skip_on_cran()
 
-  data("points", package = "commecometrics")
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
 
   traitsByPoint <- summarize_traits_by_point(
-    points_df = points,
+    points_df = geoPoints,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -18,7 +18,7 @@ test_that("sensitivity_analysis returns valid structure", {
   # Run a minimal version for testing
   result <- sensitivity_analysis(
     points_df = traitsByPoint$points,
-    env_var = "BIO12",
+    env_var = "precip",
     sample_sizes = c(20, 30),
     iterations = 2,
     transform_fun = function(x) log(x + 1),

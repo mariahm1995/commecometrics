@@ -4,15 +4,15 @@ test_that("inspect_point_species returns a leaflet map", {
   skip_on_cran()
 
   # Load internal sample data
-  data("points", package = "commecometrics")
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
 
   # Step 1: Run the summarization function
   traitsByPoint <- summarize_traits_by_point(
-    points_df = points,
+    points_df = geoPoints,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -29,7 +29,7 @@ test_that("inspect_point_species returns a leaflet map", {
   expect_s3_class(map_obj, "leaflet")
 
   # Step 3: Generate map using specific point IDs
-  specific_ids <- traitsByPoint$points$GlobalID[1:3]
+  specific_ids <- traitsByPoint$points$ID[1:3]
   map_obj2 <- inspect_point_species(
     traits_summary = traitsByPoint,
     point_ids = specific_ids,

@@ -18,7 +18,7 @@ Siciliano-Martina et al. (2024). \emph{Ecology and Evolution}, 14(10), e70214.
 traits
 }
 \description{
-A dataset of relative blade length (RBL) values for 10 species in the order Carnivora.
-These species match those in the \code{polygons} dataset.
+A dataset of relative blade length (RBL) values for five species in the order Carnivora.
+These species match those in the \code{spRanges} dataset.
 }
 \keyword{datasets}

@@ -3,15 +3,15 @@ test_that("ecometric_model_qual runs correctly and returns expected structure", 
   skip_if_not_installed("sf")
 
   # Load sample data from package
-  data("points", package = "commecometrics")
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
 
   # Summarize traits by point
   traitsByPoint <- summarize_traits_by_point(
-    points_df = points,
+    points_df = geoPoints,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -21,7 +21,7 @@ test_that("ecometric_model_qual runs correctly and returns expected structure", 
   # Run ecometric model for qualitative variable
   model_out <- ecometric_model_qual(
     points_df = traitsByPoint$points,
-    category_col = "DOM_NUM",
+    category_col = "vegetation",
     min_species = 3
   )
 

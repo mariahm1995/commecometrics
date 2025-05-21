@@ -62,14 +62,14 @@ Optionally, it assigns each point to a continent using Natural Earth data.
 \examples{
 \dontrun{
 # Load sample data from the package
-data("points", package = "commecometrics")
+data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
-data("polygons", package = "commecometrics")
+data("spRanges", package = "commecometrics")
 
 traitsByPoint <- summarize_traits_by_point(
-  points_df = points,
+  points_df = geoPoints,
   trait_df = traits,
-  species_polygons = polygons,
+  species_polygons = spRanges,
   trait_column = "RBL",
   species_name_col = "sci_name",
   continent = FALSE,

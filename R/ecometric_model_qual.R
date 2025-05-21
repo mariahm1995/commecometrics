@@ -34,15 +34,15 @@
 #' @examples
 #' \dontrun{
 #' # Load internal data
-#' data("points", package = "commecometrics")
+#' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")
-#' data("polygons", package = "commecometrics")
+#' data("spRanges", package = "commecometrics")
 #'
 #' # Step 1: Summarize trait values at sampling points
 #' traitsByPoint <- summarize_traits_by_point(
-#'   points_df = points,
+#'   points_df = geoPoints,
 #'   trait_df = traits,
-#'   species_polygons = polygons,
+#'   species_polygons = spRanges,
 #'   trait_column = "RBL",
 #'   species_name_col = "TaxonName",
 #'   continent = FALSE,
@@ -52,15 +52,12 @@
 #' # Step 2: Run ecometric model using land cover class as qualitative variable
 #' ecoModelQual <- ecometric_model_qual(
 #'   points_df = traitsByPoint$points,
-#'   category_col = "DOM_NUM",
+#'   category_col = "vegetation",
 #'   min_species = 3
 #' )
 #'
 #' # View the percentage of correctly predicted categories
 #' print(ecoModelQual$prediction_accuracy)
-#'
-#' # Inspect the predicted vs. observed land cover category for the first few points
-#' head(ecoModelQual$points_df[, c("DOM_NUM", "predicted_category", "correct_prediction")])
 #' }
 #' @export
 ecometric_model_qual <- function(points_df,

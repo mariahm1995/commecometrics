@@ -4,15 +4,15 @@ test_that("ecometric_model runs correctly and returns expected structure", {
   skip_on_cran()
 
   # Load sample data
-  data("points", package = "commecometrics")
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
 
   # Step 1: summarize traits
   traitsByPoint <- summarize_traits_by_point(
-    points_df = points,
+    points_df = geoPoints,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -22,7 +22,7 @@ test_that("ecometric_model runs correctly and returns expected structure", {
   # Step 2: run ecometric model
   modelResult <- ecometric_model(
     points_df = traitsByPoint$points,
-    env_var = "BIO12",
+    env_var = "precip",
     transform_fun = function(x) log(x + 1),
     inv_transform_fun = function(x) exp(x) - 1,
     min_species = 3

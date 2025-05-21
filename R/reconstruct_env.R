@@ -35,16 +35,16 @@
 #' @examples
 #' \dontrun{
 #' # Load internal data
-#' data("points", package = "commecometrics")
+#' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")
-#' data("polygons", package = "commecometrics")
+#' data("spRanges", package = "commecometrics")
 #' data("fossils", package = "commecometrics")
 #'
 #' # Step 1: Summarize modern trait values at sampling points
 #' traitsByPoint <- summarize_traits_by_point(
-#'   points_df = points,
+#'   points_df = geoPoints,
 #'   trait_df = traits,
-#'   species_polygons = polygons,
+#'   species_polygons = spRanges,
 #'   trait_column = "RBL",
 #'   species_name_col = "sci_name",
 #'   continent = FALSE,
@@ -54,7 +54,7 @@
 #' # Step 2: Run an ecometric model with BIO12 (precipitation)
 #' ecoModel <- ecometric_model(
 #'   points_df = traitsByPoint$points,
-#'   env_var = "BIO12",
+#'   env_var = "precip",
 #'   transform_fun = function(x) log(x + 1),
 #'   inv_transform_fun = function(x) exp(x) - 1,
 #'   min_species = 3
@@ -67,7 +67,7 @@
 #'   match_nearest = TRUE,
 #'   fossil_lon = "Long",
 #'   fossil_lat = "Lat",
-#'   modern_id = "GlobalID",
+#'   modern_id = "ID",
 #'   modern_lon = "Longitude",
 #'   modern_lat = "Latitude"
 #' )

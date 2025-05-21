@@ -10,7 +10,7 @@ inspect_point_species(
   n_random = 10,
   lon_col = "Longitude",
   lat_col = "Latitude",
-  ID_col = "GlobalID",
+  ID_col = "ID",
   min_species_valid = 3,
   env_var = NULL
 )
@@ -26,7 +26,7 @@ inspect_point_species(
 
 \item{lat_col}{Name of the latitude column in \code{points} (default = "Latitude").}
 
-\item{ID_col}{Name of the ID column in \code{points} (default = "GlobalID").}
+\item{ID_col}{Name of the ID column in \code{points} (default = "ID").}
 
 \item{min_species_valid}{Minimum number of species with trait data to consider a point valid (default = 3).}
 
@@ -41,19 +41,20 @@ Creates an interactive map to verify species overlap at selected points.
 \examples{
 \dontrun{
 # Load sample data from the package
-data("points", package = "commecometrics")
+data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
-data("polygons", package = "commecometrics")
+data("spRanges", package = "commecometrics")
 
 # Summarize traits at points
 traitsByPoint <- summarize_traits_by_point(
-  points_df = points,
+  points_df = geoPoints,
   trait_df = traits,
-  species_polygons = polygons,
+  species_polygons = spRanges,
   trait_column = "RBL",
   species_name_col = "TaxonName",
   continent = FALSE,
-  parallel = FALSE
+  parallel = FALSE,
+  ID_col = "ID"
 )
 
 # Visualize a random sample of 10 points

@@ -55,16 +55,16 @@ built from modern data. Optionally, it assigns each fossil point to the nearest 
 \examples{
 \dontrun{
 # Load internal data
-data("points", package = "commecometrics")
+data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
-data("polygons", package = "commecometrics")
+data("spRanges", package = "commecometrics")
 data("fossils", package = "commecometrics")
 
 # Step 1: Summarize trait values at sampling points
 traitsByPoint <- summarize_traits_by_point(
-  points_df = points,
+  points_df = geoPoints,
   trait_df = traits,
-  species_polygons = polygons,
+  species_polygons = spRanges,
   trait_column = "RBL",
   species_name_col = "sci_name",
   continent = FALSE,
@@ -74,7 +74,7 @@ traitsByPoint <- summarize_traits_by_point(
 # Step 2: Run a qualitative ecometric model (e.g., land cover class)
 ecoModelQual <- ecometric_model_qual(
   points_df = traitsByPoint$points,
-  category_col = "DOM_NUM",
+  category_col = "vegetation",
   min_species = 3
 )
 
@@ -85,7 +85,7 @@ reconQual <- reconstruct_env_qual(
   match_nearest = TRUE,
   fossil_lon = "Long",
   fossil_lat = "Lat",
-  modern_id = "GlobalID",
+  modern_id = "ID",
   modern_lon = "Longitude",
   modern_lat = "Latitude"
 )

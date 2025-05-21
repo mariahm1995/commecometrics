@@ -70,15 +70,15 @@ Parallel processing is supported to speed up the analysis.
 \examples{
 \dontrun{
 # Load internal data
-data("points", package = "commecometrics")
+data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
-data("polygons", package = "commecometrics")
+data("spRanges", package = "commecometrics")
 
 # Summarize trait values at sampling points
 traitsByPoint <- summarize_traits_by_point(
-  points_df = points,
+  points_df = geoPoints,
   trait_df = traits,
-  species_polygons = polygons,
+  species_polygons = spRanges,
   trait_column = "RBL",
   species_name_col = "sci_name",
   continent = FALSE,
@@ -88,8 +88,8 @@ traitsByPoint <- summarize_traits_by_point(
 # Run sensitivity analysis using annual precipitation (BIO12)
 sensitivityResults <- sensitivity_analysis(
   points_df = traitsByPoint$points,
-  env_var = "BIO12",
-  sample_sizes = seq(100, 1000, 300),
+  env_var = "precipitation",
+  sample_sizes = seq(10, 100, 20),
   iterations = 5,
   transform_fun = function(x) log(x + 1),
   parallel = FALSE  # Set to TRUE for faster performance on multicore machines

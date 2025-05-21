@@ -3,14 +3,14 @@ test_that("summarize_traits_by_point returns expected structure", {
   skip_on_cran()
 
   # Load internal data
-  data("points", package = "commecometrics")
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
 
   result <- summarize_traits_by_point(
-    points_df = points[1:10, ],
+    points_df = geoPoints[1:10, ],
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -30,16 +30,16 @@ test_that("function handles empty overlap correctly", {
   skip_on_cran()
 
   # Load internal data
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
 
   dummy_points <- data.frame(Longitude = 0, Latitude = 0)
 
   result <- summarize_traits_by_point(
     points_df = dummy_points,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,

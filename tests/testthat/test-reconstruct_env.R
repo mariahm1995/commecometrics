@@ -3,15 +3,15 @@ test_that("reconstruct_env returns expected structure with nearest match", {
   skip_if_not_installed("sf")
   skip_if_offline()
 
-  data("points", package = "commecometrics")
+  data("geoPoints", package = "commecometrics")
   data("traits", package = "commecometrics")
-  data("polygons", package = "commecometrics")
+  data("spRanges", package = "commecometrics")
   data("fossils", package = "commecometrics")
 
   traits_summary <- summarize_traits_by_point(
-    points_df = points,
+    points_df = geoPoints,
     trait_df = traits,
-    species_polygons = polygons,
+    species_polygons = spRanges,
     trait_column = "RBL",
     species_name_col = "sci_name",
     continent = FALSE,
@@ -20,7 +20,7 @@ test_that("reconstruct_env returns expected structure with nearest match", {
 
   model_out <- ecometric_model(
     points_df = traits_summary$points,
-    env_var = "BIO12",
+    env_var = "precip",
     transform_fun = function(x) log(x + 1),
     inv_transform_fun = function(x) exp(x) - 1,
     min_species = 3
@@ -32,7 +32,7 @@ test_that("reconstruct_env returns expected structure with nearest match", {
     match_nearest = TRUE,
     fossil_lon = "Long",
     fossil_lat = "Lat",
-    modern_id = "GlobalID",
+    modern_id = "ID",
     modern_lon = "Longitude",
     modern_lat = "Latitude"
   )

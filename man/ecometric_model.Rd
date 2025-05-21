@@ -6,7 +6,7 @@
 \usage{
 ecometric_model(
   points_df,
-  env_var = "BIO12",
+  env_var = "env_var",
   transform_fun = function(x) log(x + 1),
   inv_transform_fun = function(x) exp(x) - 1,
   grid_bins_mean = NULL,
@@ -59,15 +59,15 @@ calculates anomalies based on observed values for each point.
 \examples{
 \dontrun{
 # Load internal dataset
-data("points", package = "commecometrics")
+data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
-data("polygons", package = "commecometrics")
+data("spRanges", package = "commecometrics")
 
 # Summarize trait values at sampling points
 traitsByPoint <- summarize_traits_by_point(
-  points_df = points,
+  points_df = geoPoints,
   trait_df = traits,
-  species_polygons = polygons,
+  species_polygons = spRanges,
   trait_column = "RBL",
   species_name_col = "TaxonName",
   continent = FALSE,
@@ -77,7 +77,7 @@ traitsByPoint <- summarize_traits_by_point(
 # Fit an ecometric model using annual precipitation (BIO12)
 modelResult <- ecometric_model(
   points_df = traitsByPoint$points,
-  env_var = "BIO12",
+  env_var = "precip",
   transform_fun = function(x) log(x + 1),
   inv_transform_fun = function(x) exp(x) - 1,
   min_species = 3
