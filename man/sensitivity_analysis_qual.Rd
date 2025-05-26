@@ -84,7 +84,7 @@ traitsByPoint <- summarize_traits_by_point(
 sensitivityQual <- sensitivity_analysis_qual(
   points_df = traitsByPoint$points,
   category_col = "vegetation",
-  sample_sizes = seq(10, 100, 20),
+  sample_sizes = seq(40, 90, 10),
   iterations = 5,
   parallel = FALSE
 )

@@ -85,11 +85,11 @@ traitsByPoint <- summarize_traits_by_point(
   parallel = FALSE
 )
 
-# Run sensitivity analysis using annual precipitation (BIO12)
+# Run sensitivity analysis using annual precipitation
 sensitivityResults <- sensitivity_analysis(
   points_df = traitsByPoint$points,
   env_var = "precipitation",
-  sample_sizes = seq(10, 100, 20),
+  sample_sizes = seq(40, 90, 10),
   iterations = 5,
   transform_fun = function(x) log(x + 1),
   parallel = FALSE  # Set to TRUE for faster performance on multicore machines

@@ -19,7 +19,7 @@ test_that("sensitivity_analysis returns valid structure", {
   result <- sensitivity_analysis(
     points_df = traitsByPoint$points,
     env_var = "precip",
-    sample_sizes = c(20, 30),
+    sample_sizes = seq(40, 90, 10),
     iterations = 2,
     transform_fun = function(x) log(x + 1),
     parallel = FALSE
