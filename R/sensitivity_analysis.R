@@ -55,7 +55,7 @@
 #'   parallel = FALSE
 #' )
 #'
-#' # Run sensitivity analysis using annual precipitation (BIO12)
+#' # Run sensitivity analysis using annual precipitation
 #' sensitivityResults <- sensitivity_analysis(
 #'   points_df = traitsByPoint$points,
 #'   env_var = "precipitation",
@@ -99,6 +99,16 @@ sensitivity_analysis <- function(points_df,
   # Check that all sample_sizes are smaller than available data
   if (any(sample_sizes > nrow(points_df))) {
     stop("One or more sample sizes exceed the number of available data points (", nrow(points_df), ").")
+  }
+
+  # Enforce minimum valid sample size to ensure meaningful binning and correlations
+  min_valid_sample_size <- 30
+
+  if (any(sample_sizes < min_valid_sample_size)) {
+    stop("All sample sizes must be >= ", min_valid_sample_size,
+         " to ensure valid model training and prediction. ",
+         "Invalid sample sizes: ",
+         paste(sample_sizes[sample_sizes < min_valid_sample_size], collapse = ", "))
   }
 
   # Transform environmental variable if needed

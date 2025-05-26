@@ -101,6 +101,16 @@ sensitivity_analysis_qual <- function(points_df,
     stop("One or more sample sizes exceed the number of available data points (", nrow(points_df), ").")
   }
 
+  # Enforce minimum valid sample size to ensure meaningful binning and correlations
+  min_valid_sample_size <- 30
+
+  if (any(sample_sizes < min_valid_sample_size)) {
+    stop("All sample sizes must be >= ", min_valid_sample_size,
+         " to ensure valid model training and prediction. ",
+         "Invalid sample sizes: ",
+         paste(sample_sizes[sample_sizes < min_valid_sample_size], collapse = ", "))
+  }
+
   # Define single iteration function
   single_iteration <- function(sample_size, iteration) {
     set.seed(iteration)
