@@ -1,11 +1,12 @@
 #' Reconstruct past qualitative environmental categories using ecometric models
 #'
-#' Uses fossil community trait summaries (mean and SD) to reconstruct
+#' Uses fossil community trait summaries to reconstruct
 #' the most probable environmental category by projecting them onto a qualitative ecometric space
 #' built from modern data. Optionally, it assigns each fossil point to the nearest modern sampling point.
 #'
 #' @param fossildata A data frame containing fossil trait summaries per fossil site.
-#'                   Must include columns for `Mean` and `SD` of the trait.
+#'                   Must include columns corresponding to the same two summary metrics used for modern communities,
+#'                   using the column names specified by `fossil_summ_trait_1` and `fossil_summ_trait_2`.
 #' @param model_out Output list from \code{ecometric_model_qual()}, containing modern data, diagnostics, and model settings.
 #' @param match_nearest Logical; if TRUE, matches each fossil to the nearest modern point (default = TRUE).
 #' @param fossil_lon Name of the longitude column in `fossildata`. Required if \code{match_nearest = TRUE}.
@@ -17,8 +18,8 @@
 #'
 #' @return A data frame (`fossildata`) updated with:
 #' \describe{
-#'   \item{fossil_mbc}{Assigned bin number for mean trait (based on fossil trait mean).}
-#'   \item{fossil_sdc}{Assigned bin number for SD trait (based on fossil trait SD).}
+#'   \item{fossil_bin_1}{Assigned bin number for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
+#'   \item{fossil_bin_2}{Assigned bin number for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
 #'   \item{fossil_env_est}{Predicted environmental category based on trait bin.}
 #'   \item{fossil_prob_*}{Probability of each environmental category for the assigned bin.}
 #'   \item{nearest_modern_point}{(Optional) ID of the nearest modern sampling point (if \code{match_nearest = TRUE}).}
@@ -72,16 +73,23 @@ reconstruct_env_qual <- function(fossildata,
                                  modern_lon = NULL,
                                  modern_lat = NULL,
                                  crs_proj = 4326) {
+  # Check for required columns
+  required_cols <- c("fossil_summ_trait_1", "fossil_summ_trait_2")
+  missing_cols <- setdiff(required_cols, names(fossildata))
+  if (length(missing_cols) > 0) {
+    stop("Missing required columns in 'points_df': ", paste(missing_cols, collapse = ", "))
+  }
+
   message("Binning fossil points into trait space...")
 
-  mbrks <- model_out$diagnostics$mbrks
-  sdbrks <- model_out$diagnostics$sdbrks
+  mbrks <- model_out$diagnostics$brks_1
+  sdbrks <- model_out$diagnostics$brks_2
   eco_space <- model_out$eco_space
   modern_points <- model_out$points_df
 
   # Assign bins to fossils
-  fossildata$fossilmbc <- .bincode(fossildata$Mean, breaks = mbrks)
-  fossildata$fossilsdc <- .bincode(fossildata$SD, breaks = sdbrks)
+  fossildata$fossilmbc <- .bincode(fossildata$fossil_summ_trait_1, breaks = mbrks)
+  fossildata$fossilsdc <- .bincode(fossildata$fossil_summ_trait_2, breaks = sdbrks)
 
   # Predict environmental category and probabilities for each fossil
   predictions <- vector("list", nrow(fossildata))
@@ -117,8 +125,8 @@ reconstruct_env_qual <- function(fossildata,
   # Rename for clarity
   fossildata <- fossildata %>%
     dplyr::rename(
-      fossil_mbc = fossilmbc,
-      fossil_sdc = fossilsdc,
+      fossil_bin_1 = fossilmbc,
+      fossil_bin_2 = fossilsdc,
       fossil_env_est = env_est
     )
 

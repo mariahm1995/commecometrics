@@ -9,13 +9,13 @@ ecometric_model(
   env_var = "env_var",
   transform_fun = function(x) log(x + 1),
   inv_transform_fun = function(x) exp(x) - 1,
-  grid_bins_mean = NULL,
-  grid_bins_sd = NULL,
+  grid_bins_1 = NULL,
+  grid_bins_2 = NULL,
   min_species = 3
 )
 }
 \arguments{
-\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{mean_trait}, \code{sd_trait}, \code{count_trait}, and the environmental variable.}
+\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable.}
 
 \item{env_var}{Name of the environmental variable (e.g., "BIO12").}
 
@@ -23,10 +23,10 @@ ecometric_model(
 
 \item{inv_transform_fun}{Optional inverse transformation for environmental variable (e.g., \code{exp(x) - 1}).}
 
-\item{grid_bins_mean}{Number of bins for the mean trait axis. If \code{NULL} (default),
+\item{grid_bins_1}{Number of bins for the first trait axis. If \code{NULL} (default),
 the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
-\item{grid_bins_sd}{Number of bins for the SD trait axis. If \code{NULL} (default),
+\item{grid_bins_2}{Number of bins for the second trait axis. If \code{NULL} (default),
 the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
 \item{min_species}{Minimum number of species per point (default = 3).}
@@ -36,8 +36,8 @@ A list containing:
 \item{points_df}{Filtered input data frame with the following added columns:
 \describe{
 \item{env_trans}{Transformed environmental variable (if a transformation function is used).}
-\item{mbc}{Bin assignment code for mean trait value.}
-\item{sdc}{Bin assignment code for standard deviation of trait.}
+\item{bin_1}{Bin assignment code for mean trait value.}
+\item{bin_2}{Bin assignment code for standard deviation of trait.}
 \item{env_est}{Predicted (maximum likelihood) environmental value on transformed scale.}
 \item{env_anom}{Difference between observed and predicted environmental values (transformed scale).}
 \item{env_est_UN}{Inverse-transformed predicted value (if \code{inv_transform_fun} is provided).}

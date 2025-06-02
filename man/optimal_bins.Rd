@@ -7,7 +7,7 @@
 optimal_bins(x)
 }
 \arguments{
-\item{x}{Numeric vector of trait values (e.g., mean_trait or sd_trait).}
+\item{x}{Numeric vector.}
 }
 \value{
 Integer representing the optimal number of bins.
@@ -15,4 +15,11 @@ Integer representing the optimal number of bins.
 \description{
 Calculates the optimal number of bins for a numeric vector
 based on Scott's rule.
+}
+\examples{
+\dontrun{
+# Example with normally distributed data
+# Load internal data
+optimal_bins(rnorm(100))
+}
 }

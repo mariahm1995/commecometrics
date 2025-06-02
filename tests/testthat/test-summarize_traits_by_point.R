@@ -20,7 +20,7 @@ test_that("summarize_traits_by_point returns expected structure", {
   expect_type(result, "list")
   expect_named(result, c("points", "overlap"))
   expect_s3_class(result$points, "data.frame")
-  expect_true(all(c("mean_trait", "sd_trait", "richness", "count_trait") %in% colnames(result$points)))
+  expect_true(all(c("summ_trait_1", "summ_trait_2", "richness", "count_trait") %in% colnames(result$points)))
   expect_type(result$overlap, "list")
   expect_length(result$overlap, 10)
 })
@@ -47,5 +47,5 @@ test_that("function handles empty overlap correctly", {
   )
 
   expect_equal(result$points$richness, 0)
-  expect_true(is.na(result$points$mean_trait))
+  expect_true(is.na(result$points$summ_trait_1))
 })

@@ -20,14 +20,14 @@
 #'
 #' Parallel processing is supported to speed up the analysis.
 #'
-#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `mean_trait`, `sd_trait`, `count_trait`, and the environmental variable.
+#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
 #' @param env_var Name of the environmental variable column in points_df (e.g., "BIO12").
 #' @param sample_sizes Vector of sample sizes to evaluate (default: seq(100, 10000, 1000)).
 #' @param iterations Number of bootstrap iterations per sample size (default: 20).
 #' @param test_split Proportion of data to use for testing (default: 0.2).
-#' @param grid_bins_mean Number of bins for the mean trait axis. If `NULL` (default),
+#' @param grid_bins_1  Number of bins for the first trait axis. If `NULL` (default),
 #'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
-#' @param grid_bins_sd Number of bins for the SD trait axis. If `NULL` (default),
+#' @param grid_bins_2  Number of bins for the second trait axis. If `NULL` (default),
 #'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
 #' @param transform_fun Function to transform the environmental variable (default: NULL = no transformation).
 #' @param parallel Logical; whether to use parallel processing (default: TRUE).
@@ -74,8 +74,8 @@ sensitivity_analysis <- function(points_df,
                                  sample_sizes = seq(100, 10000, 1000),
                                  iterations = 20,
                                  test_split = 0.2,
-                                 grid_bins_mean = NULL,
-                                 grid_bins_sd = NULL,
+                                 grid_bins_1 = NULL,
+                                 grid_bins_2 = NULL,
                                  transform_fun = NULL,
                                  parallel = TRUE,
                                  n_cores = parallel::detectCores() - 1) {
@@ -85,7 +85,7 @@ sensitivity_analysis <- function(points_df,
   }
 
   # Check for required columns
-  required_cols <- c("mean_trait", "sd_trait", "count_trait", env_var)
+  required_cols <- c("summ_trait_1", "summ_trait_2", "count_trait", env_var)
   missing_cols <- setdiff(required_cols, names(points_df))
   if (length(missing_cols) > 0) {
     stop("Missing required columns in 'points_df': ", paste(missing_cols, collapse = ", "))
@@ -93,7 +93,7 @@ sensitivity_analysis <- function(points_df,
 
   # Remove points with missing traits or environment
   points_df <- points_df %>%
-    dplyr::filter(!is.na(mean_trait) & !is.na(sd_trait)) %>%
+    dplyr::filter(!is.na(summ_trait_1) & !is.na(summ_trait_2)) %>%
     dplyr::filter(!is.na(.data[[env_var]]))
 
   # Check that all sample_sizes are smaller than available data
@@ -133,11 +133,11 @@ sensitivity_analysis <- function(points_df,
     testing_data <- sampled_data[test_indices, ]
 
     # Determine bin numbers if not provided
-    if (is.null(grid_bins_mean)) {
-      grid_bins_mean_train <- optimal_bins(training_data$mean_trait)
+    if (is.null(grid_bins_1)) {
+      grid_bins_1_train <- optimal_bins(training_data$summ_trait_1)
     }
-    if (is.null(grid_bins_sd)) {
-      grid_bins_sd_train <- optimal_bins(training_data$sd_trait)
+    if (is.null(grid_bins_2)) {
+      grid_bins_2_train <- optimal_bins(training_data$summ_trait_2)
     }
 
     # Binning function
@@ -151,16 +151,16 @@ sensitivity_analysis <- function(points_df,
     }
 
     # Binning for training
-    mean_bin_train <- bin_codes(training_data$mean_trait, grid_bins_mean_train)
-    sd_bin_train <- bin_codes(training_data$sd_trait, grid_bins_sd_train)
+    mean_bin_train <- bin_codes(training_data$summ_trait_1, grid_bins_1_train)
+    sd_bin_train <- bin_codes(training_data$summ_trait_2, grid_bins_2_train)
     training_data$mbc <- mean_bin_train$codes
     training_data$sdc <- sd_bin_train$codes
 
 
     # Estimate environment per bin
-    bin_env_estimates <- matrix(NA, nrow = grid_bins_mean_train, ncol = grid_bins_sd_train)
-    for (i in 1:grid_bins_mean_train) {
-      for (j in 1:grid_bins_sd_train) {
+    bin_env_estimates <- matrix(NA, nrow = grid_bins_1_train, ncol = grid_bins_2_train)
+    for (i in 1:grid_bins_1_train) {
+      for (j in 1:grid_bins_2_train) {
         bin_data <- training_data$env_trans[training_data$mbc == i & training_data$sdc == j]
         if (length(bin_data) > 0) {
           dens <- density(bin_data, bw = 1, na.rm = TRUE)
@@ -182,8 +182,8 @@ sensitivity_analysis <- function(points_df,
     training_cor <- cor(training_data$env_trans, training_preds, use = "complete.obs")
 
     # Predict for testing data
-    testing_data$mbc <- .bincode(testing_data$mean_trait, breaks = mean_bin_train$breaks, include.lowest = TRUE)
-    testing_data$sdc <- .bincode(testing_data$sd_trait, breaks = sd_bin_train$breaks, include.lowest = TRUE)
+    testing_data$mbc <- .bincode(testing_data$summ_trait_1, breaks = mean_bin_train$breaks, include.lowest = TRUE)
+    testing_data$sdc <- .bincode(testing_data$summ_trait_2, breaks = sd_bin_train$breaks, include.lowest = TRUE)
 
     testing_preds <- mapply(function(m, s) {
       if (!is.na(m) && !is.na(s) && !is.na(bin_env_estimates[m, s])) {

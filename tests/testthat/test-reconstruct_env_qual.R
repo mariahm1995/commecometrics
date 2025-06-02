@@ -35,8 +35,8 @@ test_that("reconstruct_env_qual returns expected structure with nearest match", 
 
   expect_s3_class(recon_qual, "data.frame")
   expect_true("fossil_env_est" %in% names(recon_qual))
-  expect_true("fossil_mbc" %in% names(recon_qual))
-  expect_true("fossil_sdc" %in% names(recon_qual))
+  expect_true("fossil_bin_1" %in% names(recon_qual))
+  expect_true("fossil_bin_2" %in% names(recon_qual))
   expect_true(any(grepl("^fossil_prob_", names(recon_qual))))
   expect_true("nearest_modern_point" %in% names(recon_qual))
 })

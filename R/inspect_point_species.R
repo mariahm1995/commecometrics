@@ -79,8 +79,8 @@ inspect_point_species <- function(traits_summary,
 
       paste0(
         "<b>Point ID:</b> ", pt[[ID_col]], "<br><br>",
-        "<b>Mean trait:</b> ", round(pt$mean_trait, 2), "<br>",
-        "<b>SD trait:</b> ", round(pt$sd_trait, 2), "<br>",
+        "<b>Summary metric 1:</b> ", round(pt$summ_trait_1, 2), "<br>",
+        "<b>Summary metric 2:</b> ", round(pt$summ_trait_2, 2), "<br>",
         "<b>Richness:</b> ", pt$richness, "<br>",
         "<b>Richness (species with trait):</b> ", pt$count_trait, "<br>",
         if (!is.null(env_var)) paste0("<b>Environmental variable value:</b> ", round(pt[[env_var]], 2), "<br>") else "",
@@ -112,7 +112,7 @@ inspect_point_species <- function(traits_summary,
       "bottomright",
       colors = c("#3182bd", "#de2d26"),
       labels = c(
-        paste0("Valid (more than ", min_species_valid - 1, " species)"),
+        paste0("Valid (equal or more than ", min_species_valid, " species)"),
         paste0("Not valid (less than ", min_species_valid, " species)")
       ),
       title = "Point Status",

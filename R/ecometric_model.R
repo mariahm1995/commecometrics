@@ -4,13 +4,13 @@
 #' estimating environmental values in binned ecometric trait space. Also
 #' calculates anomalies based on observed values for each point.
 #'
-#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `mean_trait`, `sd_trait`, `count_trait`, and the environmental variable.
+#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
 #' @param env_var Name of the environmental variable (e.g., "BIO12").
 #' @param transform_fun Optional transformation function for environmental variable (e.g., \code{log(x + 1)}).
 #' @param inv_transform_fun Optional inverse transformation for environmental variable (e.g., \code{exp(x) - 1}).
-#' @param grid_bins_mean Number of bins for the mean trait axis. If `NULL` (default),
+#' @param grid_bins_1 Number of bins for the first trait axis. If `NULL` (default),
 #'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
-#' @param grid_bins_sd Number of bins for the SD trait axis. If `NULL` (default),
+#' @param grid_bins_2 Number of bins for the second trait axis. If `NULL` (default),
 #'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
 #' @param min_species Minimum number of species per point (default = 3).
 #'
@@ -18,8 +18,8 @@
 #' \item{points_df}{Filtered input data frame with the following added columns:
 #'   \describe{
 #'     \item{env_trans}{Transformed environmental variable (if a transformation function is used).}
-#'     \item{mbc}{Bin assignment code for mean trait value.}
-#'     \item{sdc}{Bin assignment code for standard deviation of trait.}
+#'     \item{bin_1}{Bin assignment code for mean trait value.}
+#'     \item{bin_2}{Bin assignment code for standard deviation of trait.}
 #'     \item{env_est}{Predicted (maximum likelihood) environmental value on transformed scale.}
 #'     \item{env_anom}{Difference between observed and predicted environmental values (transformed scale).}
 #'     \item{env_est_UN}{Inverse-transformed predicted value (if `inv_transform_fun` is provided).}
@@ -70,11 +70,11 @@ ecometric_model <- function(points_df,
                             env_var = "env_var",
                             transform_fun = function(x) log(x + 1),
                             inv_transform_fun = function(x) exp(x) - 1,
-                            grid_bins_mean = NULL,
-                            grid_bins_sd = NULL,
+                            grid_bins_1 = NULL,
+                            grid_bins_2 = NULL,
                             min_species = 3) {
   # Check required columns
-  required_cols <- c("mean_trait", "sd_trait", "count_trait", env_var)
+  required_cols <- c("summ_trait_1", "summ_trait_2", "count_trait", env_var)
   missing_cols <- setdiff(required_cols, names(points_df))
   if (length(missing_cols) > 0) stop("Missing required columns: ", paste(missing_cols, collapse = ", "))
 
@@ -95,54 +95,54 @@ ecometric_model <- function(points_df,
   if (nrow(filtered_df) == 0) stop("No points retained. Try lowering 'min_species'.")
 
   # Determine bin numbers if not provided
-  if (is.null(grid_bins_mean)) {
-    grid_bins_mean <- optimal_bins(filtered_df$mean_trait)
-    message("Optimal number of mean trait bins (Scott's rule): ", grid_bins_mean)
+  if (is.null(grid_bins_1)) {
+    grid_bins_1 <- optimal_bins(filtered_df$summ_trait_1)
+    message("Optimal number of bins for the first trait summary metric (Scott's rule): ", grid_bins_1)
   }
-  if (is.null(grid_bins_sd)) {
-    grid_bins_sd <- optimal_bins(filtered_df$sd_trait)
-    message("Optimal number of SD trait bins (Scott's rule): ", grid_bins_sd)
+  if (is.null(grid_bins_2)) {
+    grid_bins_2 <- optimal_bins(filtered_df$summ_trait_2)
+    message("Optimal number of bins for the second trait summary metric (Scott's rule): ", grid_bins_2)
   }
 
   # Define bin breaks
-  mrange <- range(filtered_df$mean_trait, na.rm = TRUE)
-  sdrange <- range(filtered_df$sd_trait, na.rm = TRUE)
-  mbrks <- seq(mrange[1] - 0.001, mrange[2] + 0.001, length.out = grid_bins_mean + 1)
-  sdbrks <- seq(sdrange[1] - 0.001, sdrange[2] + 0.001, length.out = grid_bins_sd + 1)
+  mrange <- range(filtered_df$summ_trait_1, na.rm = TRUE)
+  sdrange <- range(filtered_df$summ_trait_2, na.rm = TRUE)
+  mbrks <- seq(mrange[1] - 0.001, mrange[2] + 0.001, length.out = grid_bins_1 + 1)
+  sdbrks <- seq(sdrange[1] - 0.001, sdrange[2] + 0.001, length.out = grid_bins_2 + 1)
 
   # Assign bin codes
   filtered_df <- filtered_df %>%
     dplyr::mutate(
-      mbc = .bincode(mean_trait, breaks = mbrks),
-      sdc = .bincode(sd_trait, breaks = sdbrks)
+      bin_1 = .bincode(summ_trait_1, breaks = mbrks),
+      bin_2 = .bincode(summ_trait_2, breaks = sdbrks)
     )
 
   # Estimate likelihood in trait bins
   message("Estimating maximum likelihood environmental value per trait bin...")
-  grid_vals <- matrix(NA, nrow = grid_bins_sd, ncol = grid_bins_mean)
-  bin_counts <- matrix(0, nrow = grid_bins_sd, ncol = grid_bins_mean)
+  grid_vals <- matrix(NA, nrow = grid_bins_2, ncol = grid_bins_1)
+  bin_counts <- matrix(0, nrow = grid_bins_2, ncol = grid_bins_1)
 
-  for (i in 1:grid_bins_mean) {
-    for (j in 1:grid_bins_sd) {
-      idx <- which(filtered_df$mbc == i & filtered_df$sdc == j)
+  for (i in 1:grid_bins_1) {
+    for (j in 1:grid_bins_2) {
+      idx <- which(filtered_df$bin_1 == i & filtered_df$bin_2 == j)
       bin_counts[j, i] <- length(idx)
       if (length(idx) > 0) {
         dens <- density(filtered_df$env_trans[idx], bw = 1, na.rm = TRUE)
-        grid_vals[grid_bins_sd + 1 - j, i] <- dens$x[which.max(dens$y)]
+        grid_vals[grid_bins_2 + 1 - j, i] <- dens$x[which.max(dens$y)]
       }
     }
   }
 
   # Raster output
-  r <- raster::raster(raster::extent(0, grid_bins_mean, 0, grid_bins_sd), resolution = 1)
+  r <- raster::raster(raster::extent(0, grid_bins_1, 0, grid_bins_2), resolution = 1)
   r <- raster::setValues(r, as.vector(t(grid_vals)))
   raster_df <- raster::as.data.frame(r, xy = TRUE)
 
   # Predict environmental values for each point
   filtered_df$env_est <- purrr::map_dbl(seq_len(nrow(filtered_df)), function(i) {
-    mi <- filtered_df$mbc[i]
-    si <- filtered_df$sdc[i]
-    idx <- which(filtered_df$mbc == mi & filtered_df$sdc == si)
+    mi <- filtered_df$bin_1[i]
+    si <- filtered_df$bin_2[i]
+    idx <- which(filtered_df$bin_1 == mi & filtered_df$bin_2 == si)
     if (length(idx) > 0) {
       dens <- density(filtered_df$env_trans[idx], bw = 1, na.rm = TRUE)
       return(dens$x[which.max(dens$y)])
@@ -165,9 +165,9 @@ ecometric_model <- function(points_df,
   corr <- cor.test(filtered_df$env_est, filtered_df$env_trans)
 
   # Bin diagnostics
-  bin_counts_flipped <- bin_counts[grid_bins_sd:1, , drop = FALSE]
+  bin_counts_flipped <- bin_counts[grid_bins_2:1, , drop = FALSE]
   used_bins <- sum(bin_counts_flipped > 0)
-  total_bins <- grid_bins_mean * grid_bins_sd
+  total_bins <- grid_bins_1 * grid_bins_2
   message("Used ", used_bins, " of ", total_bins, " bins (", round(used_bins / total_bins * 100, 1), "%)")
 
   if (is.null(transform_fun)) {
@@ -186,8 +186,8 @@ ecometric_model <- function(points_df,
       used_bins = used_bins,
       total_bins = total_bins,
       bin_counts = bin_counts,
-      mbrks = mbrks,
-      sdbrks = sdbrks
+      brks_1 = mbrks,
+      brks_2 = sdbrks
     ),
     settings = list(
       env_var = env_var,

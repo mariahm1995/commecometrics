@@ -41,7 +41,7 @@ test_that("ecometric_model runs correctly and returns expected structure", {
   expect_s3_class(modelResult$points_df, "data.frame")
 
   # Check a few specific elements
-  expect_true("env_est" %in% names(modelResult$points_df))
-  expect_true("mean_trait" %in% names(modelResult$points_df))
+  expect_true("env_est" %in% colnames(modelResult$points_df))
+  expect_true("env_anom" %in% colnames(modelResult$points_df))
   expect_true(modelResult$diagnostics$retained_points > 0)
 })

@@ -7,20 +7,20 @@
 ecometric_model_qual(
   points_df,
   category_col,
-  grid_bins_mean = NULL,
-  grid_bins_sd = NULL,
+  grid_bins_1 = NULL,
+  grid_bins_2 = NULL,
   min_species = 3
 )
 }
 \arguments{
-\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{mean_trait}, \code{sd_trait}, \code{count_trait}, and the environmental variable.}
+\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable.}
 
 \item{category_col}{Name of the column containing the categorical trait.}
 
-\item{grid_bins_mean}{Number of bins for the mean trait axis. If \code{NULL} (default),
+\item{grid_bins_1}{Number of bins for the first trait axis. If \code{NULL} (default),
 the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
-\item{grid_bins_sd}{Number of bins for the SD trait axis. If \code{NULL} (default),
+\item{grid_bins_2}{Number of bins for the second trait axis. If \code{NULL} (default),
 the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
 \item{min_species}{Minimum number of species with trait data per point (default = 3).}
@@ -29,15 +29,14 @@ the number is calculated automatically using Scott's rule via \code{optimal_bins
 A list containing:
 \item{points_df}{Filtered input data frame with the following added columns:
 \describe{
-\item{mbc}{Bin assignment code for mean trait value.}
-\item{sdc}{Bin assignment code for standard deviation of trait.}
-\item{env_est}{Most probable environmental category predicted for each trait bin.}
+\item{bin_1}{Bin assignment code for first trait axis.}
+\item{bin_2}{Bin assignment code for second trait axis.}
 \item{prob_\if{html}{\out{<category>}}}{Estimated probability of each environmental category per trait bin (e.g., \code{prob_1}, \code{prob_2}, etc.).}
 \item{observed_probability}{Probability assigned to the observed category for each point.}
 \item{predicted_probability}{Probability assigned to the predicted (most likely) category for each point.}
 \item{predicted_category}{Predicted environmental category for each point.}
 \item{correct_prediction}{Indicator for whether the predicted category matches the observed category (\code{"Yes"} or \code{"No"}).}
-\item{anomaly}{Difference between predicted and observed category probabilities.}
+\item{env_anom}{Difference between predicted and observed category probabilities.}
 }
 }
 \item{eco_space}{Raster-format data frame representing trait space bins with estimated environmental categories.}

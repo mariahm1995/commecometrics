@@ -18,7 +18,8 @@ reconstruct_env_qual(
 }
 \arguments{
 \item{fossildata}{A data frame containing fossil trait summaries per fossil site.
-Must include columns for \code{Mean} and \code{SD} of the trait.}
+Must include columns corresponding to the same two summary metrics used for modern communities,
+using the column names specified by \code{fossil_summ_trait_1} and \code{fossil_summ_trait_2}.}
 
 \item{model_out}{Output list from \code{ecometric_model_qual()}, containing modern data, diagnostics, and model settings.}
 
@@ -39,8 +40,8 @@ Must include columns for \code{Mean} and \code{SD} of the trait.}
 \value{
 A data frame (\code{fossildata}) updated with:
 \describe{
-\item{fossil_mbc}{Assigned bin number for mean trait (based on fossil trait mean).}
-\item{fossil_sdc}{Assigned bin number for SD trait (based on fossil trait SD).}
+\item{fossil_bin_1}{Assigned bin number for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
+\item{fossil_bin_2}{Assigned bin number for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
 \item{fossil_env_est}{Predicted environmental category based on trait bin.}
 \item{fossil_prob_*}{Probability of each environmental category for the assigned bin.}
 \item{nearest_modern_point}{(Optional) ID of the nearest modern sampling point (if \code{match_nearest = TRUE}).}
@@ -48,7 +49,7 @@ A data frame (\code{fossildata}) updated with:
 }
 }
 \description{
-Uses fossil community trait summaries (mean and SD) to reconstruct
+Uses fossil community trait summaries to reconstruct
 the most probable environmental category by projecting them onto a qualitative ecometric space
 built from modern data. Optionally, it assigns each fossil point to the nearest modern sampling point.
 }

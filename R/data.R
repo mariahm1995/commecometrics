@@ -48,8 +48,8 @@
 #' @format A data frame with the following columns:
 #' \describe{
 #'   \item{Site}{Unique identifier for the fossil sample}
-#'   \item{Mean}{Estimated mean of relative blade length for the fossil site}
-#'   \item{SD}{Estimated sd of relative blade length for the fossil site}
+#'   \item{fossil_summ_trait_1}{Estimated mean of relative blade length for the fossil site}
+#'   \item{fossil_summ_trait_2}{Estimated sd of relative blade length for the fossil site}
 #'   \item{Long}{Longitude coordinate (decimal degrees)}
 #'   \item{Lat}{Latitude coordinate (decimal degrees)}
 #' }

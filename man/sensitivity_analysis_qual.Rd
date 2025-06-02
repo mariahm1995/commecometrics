@@ -10,14 +10,14 @@ sensitivity_analysis_qual(
   sample_sizes = seq(100, 10000, 1000),
   iterations = 20,
   test_split = 0.2,
-  grid_bins_mean = NULL,
-  grid_bins_sd = NULL,
+  grid_bins_1 = NULL,
+  grid_bins_2 = NULL,
   parallel = TRUE,
   n_cores = parallel::detectCores() - 1
 )
 }
 \arguments{
-\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{mean_trait}, \code{sd_trait}, \code{count_trait}, and the environmental variable.}
+\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable.}
 
 \item{category_col}{Name of the column containing the categorical trait.}
 
@@ -27,10 +27,10 @@ sensitivity_analysis_qual(
 
 \item{test_split}{Proportion of data to use for testing (default = 0.2).}
 
-\item{grid_bins_mean}{Number of bins for the mean trait axis. If \code{NULL} (default),
+\item{grid_bins_1}{Number of bins for the first trait axis. If \code{NULL} (default),
 the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
-\item{grid_bins_sd}{Number of bins for the SD trait axis. If \code{NULL} (default),
+\item{grid_bins_2}{Number of bins for the second trait axis. If \code{NULL} (default),
 the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
 \item{parallel}{Logical; whether to run iterations in parallel (default = TRUE).}

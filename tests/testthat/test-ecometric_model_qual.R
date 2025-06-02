@@ -31,13 +31,13 @@ test_that("ecometric_model_qual runs correctly and returns expected structure", 
 
   # Check that points_df contains expected new columns
   expect_s3_class(model_out$points_df, "data.frame")
-  expect_true(all(c("mbc", "sdc", "env_est", "observed_probability",
+  expect_true(all(c("bin_1", "bin_2", "observed_probability",
                     "predicted_probability", "predicted_category",
-                    "correct_prediction", "anomaly") %in% colnames(model_out$points_df)))
+                    "correct_prediction", "env_anom") %in% colnames(model_out$points_df)))
 
   # Check that eco_space is a data frame with mode predictions
   expect_s3_class(model_out$eco_space, "data.frame")
-  expect_true(all(c("mbc", "sdc", "env_est") %in% colnames(model_out$eco_space)))
+  expect_true(all(c("bin_1", "bin_2", "env_est") %in% colnames(model_out$eco_space)))
 
   # Check prediction accuracy is numeric between 0 and 100
   expect_type(model_out$prediction_accuracy, "double")

@@ -3,9 +3,15 @@
 #' Calculates the optimal number of bins for a numeric vector
 #' based on Scott's rule.
 #'
-#' @param x Numeric vector of trait values (e.g., mean_trait or sd_trait).
+#' @param x Numeric vector.
 #' @return Integer representing the optimal number of bins.
-
+#'
+#' @examples
+#' \dontrun{
+#' # Example with normally distributed data
+#' # Load internal data
+#' optimal_bins(rnorm(100))
+#'}
 #' @export
 optimal_bins <- function(x) {
   x <- na.omit(x)

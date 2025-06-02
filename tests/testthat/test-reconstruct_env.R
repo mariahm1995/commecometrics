@@ -38,7 +38,7 @@ test_that("reconstruct_env returns expected structure with nearest match", {
   )
 
   expect_s3_class(recon, "data.frame")
-  expect_true(all(c("fossil_mbc", "fossil_sdc", "fossil_env_est", "fossil_env_est_UN") %in% colnames(recon)))
+  expect_true(all(c("fossil_bin_1", "fossil_bin_2", "fossil_env_est", "fossil_env_est_UN") %in% colnames(recon)))
   expect_true("nearest_modern_point" %in% colnames(recon))
   expect_type(recon$fossil_env_est, "double")
 })

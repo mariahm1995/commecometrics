@@ -20,7 +20,8 @@ reconstruct_env(
 }
 \arguments{
 \item{fossildata}{A data frame containing fossil trait summaries per fossil site.
-Must include columns for \code{Mean} and \code{SD} of the trait.}
+Must include columns corresponding to the same two summary metrics used for modern communities,
+using the column names specified by \code{fossil_summ_trait_1} and \code{fossil_summ_trait_2}.}
 
 \item{model_out}{Output list from \code{run_ecometric_model()}, containing modern data, diagnostics, and model settings.}
 
@@ -46,8 +47,8 @@ Default is \code{exp(x) - 1}. If \code{NULL}, the inverse transform stored in \c
 \value{
 A data frame (\code{fossildata}) with reconstructed environmental values and optional nearest modern point data. Includes the following additional columns:
 \describe{
-\item{fossil_mbc}{Assigned bin number for mean trait (based on fossil trait mean).}
-\item{fossil_sdc}{Assigned bin number for SD trait (based on fossil trait SD).}
+\item{fossil_bin_1}{Assigned bin number for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
+\item{fossil_bin_2}{Assigned bin number for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
 \item{fossil_env_est}{Maximum likelihood estimate of the environmental variable (on transformed scale if applicable).}
 \item{fossil_minlimit}{Lower bound of the confidence interval around the environmental estimate (transformed scale).}
 \item{fossil_maxlimit}{Upper bound of the confidence interval around the environmental estimate (transformed scale).}
@@ -59,7 +60,7 @@ A data frame (\code{fossildata}) with reconstructed environmental values and opt
 }
 }
 \description{
-Uses fossil community trait summaries (mean and SD) to reconstruct
+Uses fossil community trait summaries to reconstruct
 past environmental conditions by projecting them onto a binned ecometric trait space
 built from modern data. Optionally, it also assigns each fossil point to the nearest
 modern sampling site to retrieve observed environmental data.

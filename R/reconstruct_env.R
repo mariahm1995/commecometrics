@@ -1,12 +1,13 @@
 #' Reconstruct past environmental conditions using ecometric models
 #'
-#' Uses fossil community trait summaries (mean and SD) to reconstruct
+#' Uses fossil community trait summaries to reconstruct
 #' past environmental conditions by projecting them onto a binned ecometric trait space
 #' built from modern data. Optionally, it also assigns each fossil point to the nearest
 #' modern sampling site to retrieve observed environmental data.
 #'
 #' @param fossildata A data frame containing fossil trait summaries per fossil site.
-#'                   Must include columns for `Mean` and `SD` of the trait.
+#'                   Must include columns corresponding to the same two summary metrics used for modern communities,
+#'                   using the column names specified by `fossil_summ_trait_1` and `fossil_summ_trait_2`.
 #' @param model_out Output list from \code{run_ecometric_model()}, containing modern data, diagnostics, and model settings.
 #' @param inv_transform A function to back-transform environmental estimates to the original scale.
 #'                      Default is \code{exp(x) - 1}. If \code{NULL}, the inverse transform stored in \code{model_out} is used if available.
@@ -21,8 +22,8 @@
 #'
 #' @return A data frame (`fossildata`) with reconstructed environmental values and optional nearest modern point data. Includes the following additional columns:
 #' \describe{
-#'   \item{fossil_mbc}{Assigned bin number for mean trait (based on fossil trait mean).}
-#'   \item{fossil_sdc}{Assigned bin number for SD trait (based on fossil trait SD).}
+#'   \item{fossil_bin_1}{Assigned bin number for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
+#'   \item{fossil_bin_2}{Assigned bin number for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
 #'   \item{fossil_env_est}{Maximum likelihood estimate of the environmental variable (on transformed scale if applicable).}
 #'   \item{fossil_minlimit}{Lower bound of the confidence interval around the environmental estimate (transformed scale).}
 #'   \item{fossil_maxlimit}{Upper bound of the confidence interval around the environmental estimate (transformed scale).}
@@ -85,10 +86,18 @@ reconstruct_env <- function(fossildata,
                             modern_lon = NULL,
                             modern_lat = NULL,
                             crs_proj = 4326) {
+
+  # Check for required columns
+  required_cols <- c("fossil_summ_trait_1", "fossil_summ_trait_2")
+  missing_cols <- setdiff(required_cols, names(fossildata))
+  if (length(missing_cols) > 0) {
+    stop("Missing required columns in 'points_df': ", paste(missing_cols, collapse = ", "))
+  }
+
   message("Binning fossil points into trait space...")
 
-  mbrks <- model_out$diagnostics$mbrks
-  sdbrks <- model_out$diagnostics$sdbrks
+  mbrks <- model_out$diagnostics$brks_1
+  sdbrks <- model_out$diagnostics$brks_2
   modern_points <- model_out$points_df
 
   if (model_out$settings$transformed) {
@@ -97,8 +106,8 @@ reconstruct_env <- function(fossildata,
     env_col <- model_out$settings$env_var
   }
 
-  mbc_col <- "mbc"
-  sdc_col <- "sdc"
+  mbc_col <- "bin_1"
+  sdc_col <- "bin_2"
 
   # Use model's inverse transform if inv_transform not provided
   if (missing(inv_transform) || is.null(inv_transform)) {
@@ -112,8 +121,8 @@ reconstruct_env <- function(fossildata,
   }
 
   # Assign bins to fossil points
-  fossildata$fossilmbc <- .bincode(fossildata$Mean, breaks = mbrks)
-  fossildata$fossilsdbc <- .bincode(fossildata$SD, breaks = sdbrks)
+  fossildata$fossilmbc <- .bincode(fossildata$fossil_summ_trait_1, breaks = mbrks)
+  fossildata$fossilsdbc <- .bincode(fossildata$fossil_summ_trait_2, breaks = sdbrks)
 
   fossilmodmax <- list()
 
@@ -182,8 +191,8 @@ reconstruct_env <- function(fossildata,
   if (!is.null(inv_transform)) {
     fossildata <- fossildata %>%
       dplyr::rename(
-        fossil_mbc = fossilmbc,
-        fossil_sdc = fossilsdbc,
+        fossil_bin_1 = fossilmbc,
+        fossil_bin_2 = fossilsdbc,
         fossil_env_est = envest,
         fossil_minlimit = minlimit,
         fossil_maxlimit = maxlimit,
@@ -195,8 +204,8 @@ reconstruct_env <- function(fossildata,
   } else {
     fossildata <- fossildata %>%
       dplyr::rename(
-        fossil_mbc = fossilmbc,
-        fossil_sdc = fossilsdbc,
+        fossil_bin_1 = fossilmbc,
+        fossil_bin_2 = fossilsdbc,
         fossil_env_est = envest,
         fossil_minlimit = minlimit,
         fossil_maxlimit = maxlimit,

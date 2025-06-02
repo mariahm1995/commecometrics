@@ -91,23 +91,33 @@ ecometric_space_qual <- function(model_out,
   }
 
   # Axis breakpoints
-  mbreaks <- model_out$diagnostics$mbrks
-  sd_breaks <- model_out$diagnostics$sdbrks
-  grid_bins <- length(mbreaks) - 1
+  mbreaks <- model_out$diagnostics$brks_1
+  sd_breaks <- model_out$diagnostics$brks_2
+  grid_bins_x <- length(mbreaks) - 1
+  grid_bins_y <- length(sd_breaks) - 1
 
-  middle_idx <- if (grid_bins %% 2 == 0) {
-    (grid_bins / 2) + 1
+  # Axis midpoints
+  middle_idx_x <- if (grid_bins_x %% 2 == 0) {
+    (grid_bins_x / 2) + 1
   } else {
-    ceiling(grid_bins / 2)
+    ceiling(grid_bins_x / 2)
   }
 
-  x_breaks <- c(mbreaks[1], mbreaks[middle_idx], mbreaks[grid_bins - 1])
-  x_labels <- round(x_breaks, 2)
-  x_pos <- c(0.5, middle_idx - 0.5, grid_bins - 0.5)
+  middle_idx_y <- if (grid_bins_y %% 2 == 0) {
+    (grid_bins_y / 2) + 1
+  } else {
+    ceiling(grid_bins_y / 2)
+  }
 
-  y_breaks <- c(sd_breaks[1], sd_breaks[middle_idx], sd_breaks[grid_bins - 1])
+  # X axis labels and breaks
+  x_breaks <- c(mbreaks[1], mbreaks[middle_idx_x], mbreaks[grid_bins_x])
+  x_labels <- round(x_breaks, 2)
+  x_pos <- c(0.5, middle_idx_x - 0.5, grid_bins_x - 0.5)
+
+  # Y axis labels and breaks
+  y_breaks <- c(sd_breaks[1], sd_breaks[middle_idx_y], sd_breaks[grid_bins_y])
   y_labels <- round(y_breaks, 2)
-  y_pos <- c(0.5, middle_idx - 0.5, grid_bins - 0.5)
+  y_pos <- c(0.5, middle_idx_y - 0.5, grid_bins_y - 0.5)
 
   # Default category labels if not provided
   if (is.null(category_labels)) {
@@ -116,11 +126,11 @@ ecometric_space_qual <- function(model_out,
   }
 
   ## 1. Predicted Category Map
-  p1 <- ggplot2::ggplot(eco_space, ggplot2::aes(x = mbc - 0.5, y = sdc - 0.5, fill = as.factor(env_est))) +
+  p1 <- ggplot2::ggplot(eco_space, ggplot2::aes(x = bin_1 - 0.5, y = bin_2 - 0.5, fill = as.factor(env_est))) +
     ggplot2::geom_tile(color = NA) +
     ggplot2::scale_fill_manual(values = palette, labels = category_labels, name = "Predicted") +
-    ggplot2::scale_x_continuous(name = "Mean", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins)) +
-    ggplot2::scale_y_continuous(name = "SD", breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins)) +
+    ggplot2::scale_x_continuous(name = "Summary metric 1", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
+    ggplot2::scale_y_continuous(name = "Summary metric 2", breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
     ggplot2::coord_fixed() +
     ggplot2::theme_bw()
 
@@ -130,24 +140,24 @@ ecometric_space_qual <- function(model_out,
       ggplot2::geom_rect(
         data = fossil_data,
         ggplot2::aes(
-          xmin = as.numeric(fossil_mbc) - 1,
-          xmax = as.numeric(fossil_mbc),
-          ymin = as.numeric(fossil_sdc) - 1,
-          ymax = as.numeric(fossil_sdc)
+          xmin = as.numeric(fossil_bin_1) - 1,
+          xmax = as.numeric(fossil_bin_1),
+          ymin = as.numeric(fossil_bin_2) - 1,
+          ymax = as.numeric(fossil_bin_2)
         ),
         inherit.aes = FALSE,
-        colour = fossil_color, alpha = 0, size = 1
+        colour = fossil_color, alpha = 0, linewidth = 1
       ) +
       geom_rect(
         data = fossil_data,
         aes(
-          xmin = as.numeric(mbc) - 1,
-          xmax = as.numeric(mbc),
-          ymin = as.numeric(sdc) - 1,
-          ymax = as.numeric(sdc)
+          xmin = as.numeric(bin_1) - 1,
+          xmax = as.numeric(bin_1),
+          ymin = as.numeric(bin_2) - 1,
+          ymax = as.numeric(bin_2)
         ),
         inherit.aes = FALSE,
-        colour = modern_color, alpha = 0, size = 1
+        colour = modern_color, alpha = 0, linewidth = 1
       )
   }
 
@@ -159,15 +169,15 @@ ecometric_space_qual <- function(model_out,
 
     if (prob_col %in% names(eco_space)) {
       rdf <- eco_space %>%
-        dplyr::select(mbc, sdc, !!prob_col) %>%
+        dplyr::select(bin_1, bin_2, !!prob_col) %>%
         dplyr::rename(Probability = !!prob_col) %>%
         dplyr::mutate(Probability = ifelse(Probability == 0, NA_real_, Probability))
 
-      p <- ggplot2::ggplot(rdf, ggplot2::aes(x = mbc - 0.5, y = sdc - 0.5, fill = Probability)) +
+      p <- ggplot2::ggplot(rdf, ggplot2::aes(x = bin_1 - 0.5, y = bin_2 - 0.5, fill = Probability)) +
         ggplot2::geom_tile(color = NA) +
         ggplot2::scale_fill_viridis_c(name = "Probability", limits = c(0, 1), na.value = "transparent") +
-        ggplot2::scale_x_continuous(name = "Mean", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins)) +
-        ggplot2::scale_y_continuous(name = "SD", breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins)) +
+        ggplot2::scale_x_continuous(name = "Summary metric 1", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
+        ggplot2::scale_y_continuous(name = "Summary metric 2", breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
         ggplot2::coord_fixed() +
         ggplot2::theme_bw() +
         ggplot2::ggtitle(category_labels[as.character(cat)])
@@ -178,10 +188,10 @@ ecometric_space_qual <- function(model_out,
           ggplot2::geom_rect(
             data = fossil_data,
             ggplot2::aes(
-              xmin = as.numeric(fossil_mbc) - 1,
-              xmax = as.numeric(fossil_mbc),
-              ymin = as.numeric(fossil_sdc) - 1,
-              ymax = as.numeric(fossil_sdc)
+              xmin = as.numeric(fossil_bin_1) - 1,
+              xmax = as.numeric(fossil_bin_1),
+              ymin = as.numeric(fossil_bin_2) - 1,
+              ymax = as.numeric(fossil_bin_2)
             ),
             inherit.aes = FALSE,
             colour = fossil_color, alpha = 0, size = 0.8
@@ -189,10 +199,10 @@ ecometric_space_qual <- function(model_out,
           geom_rect(
             data = fossil_data,
             aes(
-              xmin = as.numeric(mbc) - 1,
-              xmax = as.numeric(mbc),
-              ymin = as.numeric(sdc) - 1,
-              ymax = as.numeric(sdc)
+              xmin = as.numeric(bin_1) - 1,
+              xmax = as.numeric(bin_1),
+              ymin = as.numeric(bin_2) - 1,
+              ymax = as.numeric(bin_2)
             ),
             inherit.aes = FALSE,
             colour = modern_color, alpha = 0, size = 1

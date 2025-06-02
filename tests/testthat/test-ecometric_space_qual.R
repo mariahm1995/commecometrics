@@ -15,7 +15,7 @@ test_that("ecometric_space_qual returns a valid ggplot list structure", {
     parallel = FALSE
   )
 
-  ecoModelQual <- ecometric_model_qual(
+  modelResult <- ecometric_model_qual(
     points_df = traitsByPoint$points,
     category_col = "vegetation",
     min_species = 3
@@ -23,7 +23,7 @@ test_that("ecometric_space_qual returns a valid ggplot list structure", {
 
   reconQual <- reconstruct_env_qual(
     fossildata = fossils,
-    model_out = ecoModelQual,
+    model_out = modelResult,
     match_nearest = TRUE,
     fossil_lon = "Long",
     fossil_lat = "Lat",
@@ -33,7 +33,7 @@ test_that("ecometric_space_qual returns a valid ggplot list structure", {
   )
 
   plotList <- ecometric_space_qual(
-    model_out = ecoModelQual,
+    model_out = modelResult,
     fossil_data = reconQual
   )
 
@@ -45,4 +45,9 @@ test_that("ecometric_space_qual returns a valid ggplot list structure", {
   # Check only non-null elements of probability_maps
   nonnull_probs <- Filter(Negate(is.null), plotList$probability_maps)
   expect_true(all(vapply(nonnull_probs, inherits, logical(1), what = "ggplot")))
+
+  # Check a few specific elements
+  expect_true("env_est" %in% colnames(modelResult$points_df))
+  expect_true("env_anom" %in% colnames(modelResult$points_df))
+  expect_true(modelResult$diagnostics$retained_points > 0)
 })

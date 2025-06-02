@@ -10,9 +10,10 @@ NULL
 
 # Suppress CMD check notes for non-standard evaluation variables used in pipes and ggplot2
 utils::globalVariables(c(
-  ".data", "env_est", "envest", "envestUN", "layer", "x", "y", "fossil_mbc", "fossil_sdc",
-  "mbc", "sdc", "Probability", "SampleSize", "Training_Mean_Anomaly", "Training_Correlation",
+  ".data", "env_est", "envest", "envestUN", "layer", "x", "y", "fossil_bin_1", "fossil_bin_2",
+  "bin_1", "bin_2", "Probability", "SampleSize", "Training_Mean_Anomaly", "Training_Correlation",
   "Testing_Mean_Anomaly", "Testing_Correlation", "Training_Accuracy", "Testing_Accuracy",
-  "fossilmbc", "fossilsdc", "fossilsdbc", "near.point", "maxlimit", "minlimit",
-  "maxlimitUN", "minlimitUN", "TaxonName", "count_trait", "mean_trait", "sd_trait", "env_trans"
+  "fossilmbc", "fossil_summ_trait_2", "fossil_summ_trait_1", "near.point", "maxlimit", "minlimit", "brks_1", "brks_2",
+  "maxlimitUN", "minlimitUN", "TaxonName", "count_trait", "summ_trait_1", "summ_trait_2", "env_trans",
+  "fossilsdbc", "fossilsdc", "mbc", "points_df", "sdc"
 ))
