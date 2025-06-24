@@ -162,7 +162,7 @@ summarize_traits_by_point <- function(points_df,
     joined <- sf::st_join(points_sf, continent_shp, left = TRUE)
     points_df$continent <- joined$continent[match(sf::st_coordinates(points_sf)[, 1], sf::st_coordinates(joined)[, 1])]
     # Correct French Guiana: if labeled as Europe but located in South America by coordinates
-    # Typical coordinates for French Guiana are ~longitude -54, latitude ~4 to 6
+    # Coordinates for French Guiana are ~longitude -54, latitude ~4 to 6
     points_df$continent[
       points_df$continent == "Europe" &
         points_df[[lon_col]] < -50 & points_df[[lat_col]] < 10

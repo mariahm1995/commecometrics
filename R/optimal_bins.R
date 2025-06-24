@@ -23,7 +23,7 @@ optimal_bins <- function(x) {
   sigma <- stats::sd(x)
   h <- 3.49 * sigma / (n^(1 / 3))
   if (h <= 0) {
-    warning("Non-positive bin width calculated; defaulting to 1 bin.")
+    warning("Non-positive bin width calculated. Defaulting to 1 bin.")
     return(1)
   }
   range_x <- max(x) - min(x)

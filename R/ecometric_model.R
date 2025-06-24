@@ -68,8 +68,8 @@
 #' @export
 ecometric_model <- function(points_df,
                             env_var = "env_var",
-                            transform_fun = function(x) log(x + 1),
-                            inv_transform_fun = function(x) exp(x) - 1,
+                            transform_fun = function(x) x,
+                            inv_transform_fun = function(x) x,
                             grid_bins_1 = NULL,
                             grid_bins_2 = NULL,
                             min_species = 3) {
