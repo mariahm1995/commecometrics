@@ -34,7 +34,7 @@
 #' )
 #'
 #' # Run ecometric model for qualitative variable
-#' ecoModelQual <- ecometric_model_qual(
+#' modelResult <- ecometric_model_qual(
 #'   points_df = traitsByPoint$points,
 #'   category_col = "vegetation",
 #'   min_species = 3
@@ -43,7 +43,7 @@
 #' # Reconstruct fossil environmental categories
 #' reconQual <- reconstruct_env_qual(
 #'   fossildata = fossils,
-#'   model_out = ecoModelQual,
+#'   model_out = modelResult,
 #'   match_nearest = TRUE,
 #'   fossil_lon = "Long",
 #'   fossil_lat = "Lat",
@@ -54,7 +54,7 @@
 #'
 #' # Plot qualitative ecometric space
 #' ecoPlotQual <- ecometric_space_qual(
-#'   model_out = ecoModelQual,
+#'   model_out = modelResult,
 #'   fossil_data = reconQual
 #' )
 #'

@@ -69,13 +69,13 @@ traitsByPoint <- summarize_traits_by_point(
 )
 
 # Step 2: Run ecometric model using land cover class as qualitative variable
-ecoModelQual <- ecometric_model_qual(
+modelResult <- ecometric_model_qual(
   points_df = traitsByPoint$points,
   category_col = "vegetation",
   min_species = 3
 )
 
 # View the percentage of correctly predicted categories
-print(ecoModelQual$prediction_accuracy)
+print(modelResult$prediction_accuracy)
 }
 }

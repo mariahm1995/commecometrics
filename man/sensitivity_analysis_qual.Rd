@@ -7,7 +7,7 @@
 sensitivity_analysis_qual(
   points_df,
   category_col,
-  sample_sizes = seq(100, 10000, 1000),
+  sample_sizes,
   iterations = 20,
   test_split = 0.2,
   grid_bins_1 = NULL,
@@ -21,7 +21,13 @@ sensitivity_analysis_qual(
 
 \item{category_col}{Name of the column containing the categorical trait.}
 
-\item{sample_sizes}{Vector of sample sizes to evaluate (default = seq(100, 10000, 1000)).}
+\item{sample_sizes}{Numeric vector specifying the number of communities (sampling points)
+to evaluate in the sensitivity analysis. For each value, a random subset of the data of that
+size is drawn without replacement and then split into training and testing sets using the
+proportion defined by \code{test_split} (default is 80\% training, 20\% testing).
+All values in \code{sample_sizes} must be less than or equal to the number of rows in \code{points_df},
+and large enough to allow splitting based on \code{test_split} (i.e., both the training and testing
+sets must contain at 30 communities).}
 
 \item{iterations}{Number of bootstrap iterations per sample size (default = 20).}
 

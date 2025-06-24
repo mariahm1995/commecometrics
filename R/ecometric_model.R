@@ -5,7 +5,7 @@
 #' calculates anomalies based on observed values for each point.
 #'
 #' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
-#' @param env_var Name of the environmental variable (e.g., "BIO12").
+#' @param env_var Name of the environmental variable (e.g., "precip”).
 #' @param transform_fun Optional transformation function for environmental variable (e.g., \code{log(x + 1)}).
 #' @param inv_transform_fun Optional inverse transformation for environmental variable (e.g., \code{exp(x) - 1}).
 #' @param grid_bins_1 Number of bins for the first trait axis. If `NULL` (default),
@@ -61,9 +61,10 @@
 #' )
 #'
 #' # View correlation between predicted and observed values
-#' print(eco_model$correlation)
+#' print(modelResult$correlation)
+#'
 #' # View summary of the linear model fit
-#' summary(eco_model$model)
+#' summary(modelResult$model)
 #' }
 #' @export
 ecometric_model <- function(points_df,

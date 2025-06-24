@@ -7,8 +7,8 @@
 ecometric_model(
   points_df,
   env_var = "env_var",
-  transform_fun = function(x) log(x + 1),
-  inv_transform_fun = function(x) exp(x) - 1,
+  transform_fun = function(x) x,
+  inv_transform_fun = function(x) x,
   grid_bins_1 = NULL,
   grid_bins_2 = NULL,
   min_species = 3
@@ -17,7 +17,7 @@ ecometric_model(
 \arguments{
 \item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable.}
 
-\item{env_var}{Name of the environmental variable (e.g., "BIO12").}
+\item{env_var}{Name of the environmental variable (e.g., "precip”).}
 
 \item{transform_fun}{Optional transformation function for environmental variable (e.g., \code{log(x + 1)}).}
 
@@ -84,8 +84,9 @@ modelResult <- ecometric_model(
 )
 
 # View correlation between predicted and observed values
-print(eco_model$correlation)
+print(modelResult$correlation)
+
 # View summary of the linear model fit
-summary(eco_model$model)
+summary(modelResult$model)
 }
 }

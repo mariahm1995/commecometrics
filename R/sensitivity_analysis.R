@@ -21,8 +21,14 @@
 #' Parallel processing is supported to speed up the analysis.
 #'
 #' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
-#' @param env_var Name of the environmental variable column in points_df (e.g., "BIO12").
-#' @param sample_sizes Vector of sample sizes to evaluate (default: seq(100, 10000, 1000)).
+#' @param env_var Name of the environmental variable column in points_df (e.g., "precip").
+#' @param sample_sizes Numeric vector specifying the number of communities (sampling points)
+#'   to evaluate in the sensitivity analysis. For each value, a random subset of the data of that
+#'   size is drawn without replacement and then split into training and testing sets using the
+#'   proportion defined by `test_split` (default is 80% training, 20% testing).
+#'   All values in `sample_sizes` must be less than or equal to the number of rows in `points_df`,
+#'   and large enough to allow splitting based on `test_split` (i.e., both the training and testing
+#'   sets must contain at 30 communities).
 #' @param iterations Number of bootstrap iterations per sample size (default: 20).
 #' @param test_split Proportion of data to use for testing (default: 0.2).
 #' @param grid_bins_1  Number of bins for the first trait axis. If `NULL` (default),
@@ -71,7 +77,7 @@
 #' @export
 sensitivity_analysis <- function(points_df,
                                  env_var,
-                                 sample_sizes = seq(100, 10000, 1000),
+                                 sample_sizes,
                                  iterations = 20,
                                  test_split = 0.2,
                                  grid_bins_1 = NULL,
