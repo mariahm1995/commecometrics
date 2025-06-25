@@ -1,7 +1,7 @@
 #' Reconstruct past qualitative environmental categories using ecometric models
 #'
-#' Uses fossil community trait summaries to reconstruct
-#' the most probable environmental category by projecting them onto a qualitative ecometric space
+#' Uses fossil community trait summaries to reconstruct the most likely
+#' environmental category by projecting them onto a qualitative ecometric space
 #' built from modern data. Optionally, it assigns each fossil point to the nearest modern sampling point.
 #'
 #' @param fossildata A data frame containing fossil trait summaries per fossil site.

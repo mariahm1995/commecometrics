@@ -49,7 +49,7 @@ A list containing:
 \item{summary_results}{Mean accuracy per sample size.}
 }
 \description{
-This function evaluates how varying sample sizes affect the performance of ecometric models,
+Evaluates how varying sample sizes affect the performance of ecometric models,
 focusing on two aspects:
 \itemize{
 \item \strong{Sensitivity (internal consistency)}: How accurately the model predicts environmental conditions

@@ -53,8 +53,8 @@ A list containing:
 }
 \description{
 Builds an ecometric trait space for quantitative environmental variables,
-estimating environmental values in binned ecometric trait space. Also
-calculates anomalies based on observed values for each point.
+estimating environmental values of each category at each trait bin combination.
+Also calculates anomalies based on observed values for each point.
 }
 \examples{
 \dontrun{

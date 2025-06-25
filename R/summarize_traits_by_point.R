@@ -86,6 +86,12 @@ summarize_traits_by_point <- function(points_df,
     stop(paste0("Species name column '", species_name_col, "' not found in 'species_polygons'."))
   }
 
+  unmatched_names <- setdiff(trait_df$TaxonName, species_polygons[[species_name_col]])
+  if (length(unmatched_names) > 0) {
+    warning("Some species names in 'trait_df$TaxonName' do not match any names in 'species_polygons[[species_name_col]]'.\n",
+         "Example unmatched name(s): ", paste(head(unmatched_names, 5), collapse = ", "), "...\n",
+         "Please ensure that 'TaxonName' matches the species name column in the polygons (", species_name_col, ").")
+  }
   message("Identifying overlapping species...")
 
   species_polygons <- sf::st_make_valid(species_polygons)

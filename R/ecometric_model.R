@@ -1,8 +1,8 @@
 #' Run an ecometric model for quantitative environmental variables
 #'
 #' Builds an ecometric trait space for quantitative environmental variables,
-#' estimating environmental values in binned ecometric trait space. Also
-#' calculates anomalies based on observed values for each point.
+#' estimating environmental values of each category at each trait bin combination.
+#' Also calculates anomalies based on observed values for each point.
 #'
 #' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
 #' @param env_var Name of the environmental variable (e.g., "precip”).
