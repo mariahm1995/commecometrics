@@ -124,8 +124,8 @@ ecometric_model_qual <- function(points_df,
         mode_cat <- categories[which.max(probs)]
 
         eco_list[[length(eco_list) + 1]] <- tibble::tibble(
-          x = i,
-          y = j,
+          bin_1 = i,
+          bin_2 = j,
           env_est = mode_cat,
           !!!setNames(as.list(probs), paste0("prob_", categories))
         )
@@ -143,6 +143,9 @@ ecometric_model_qual <- function(points_df,
 
   # Map predictions back to points
   filtered_df <- dplyr::left_join(filtered_df, eco_space, by = c("bin_1", "bin_2"))
+
+  names(eco_space)[names(eco_space) == "bin_1"] <- "x"
+  names(eco_space)[names(eco_space) == "bin_2"] <- "y"
 
   # Compute probabilities for observed/predicted
   observed_prob_col <- paste0("prob_", filtered_df[[category_col]])

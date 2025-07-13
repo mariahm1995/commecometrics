@@ -195,7 +195,7 @@ ecoModelQual$eco_space
 
 ## Sensitivity Analysis (Qualitative)
 
-``` r
+``` {r}
 sensitivityQual <- sensitivity_analysis_qual(
   points_df = traitsByPoint$points,
   category_col = "DOM_NUM",
