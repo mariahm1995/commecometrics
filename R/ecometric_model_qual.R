@@ -134,6 +134,11 @@ ecometric_model_qual <- function(points_df,
   }
 
   eco_space <- dplyr::bind_rows(eco_list)
+  eco_space <- eco_space %>%
+    dplyr::mutate(
+      x = bin_1,
+      y = bin_2
+      )
 
   # Bin diagnostics
   bin_counts_flipped <- bin_counts[grid_bins_2:1, , drop = FALSE]

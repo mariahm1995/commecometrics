@@ -126,7 +126,7 @@ ecometric_space_qual <- function(model_out,
   }
 
   ## 1. Predicted Category Map
-  p1 <- ggplot2::ggplot(eco_space, ggplot2::aes(x = bin_1 - 0.5, y = bin_2 - 0.5, fill = as.factor(env_est))) +
+  p1 <- ggplot2::ggplot(eco_space, ggplot2::aes(x = x - 0.5, y = y - 0.5, fill = as.factor(env_est))) +
     ggplot2::geom_tile(color = NA) +
     ggplot2::scale_fill_manual(values = palette, labels = category_labels, name = "Most likely") +
     ggplot2::scale_x_continuous(name = "Summary metric 1", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
@@ -173,7 +173,7 @@ ecometric_space_qual <- function(model_out,
         dplyr::rename(Probability = !!prob_col) %>%
         dplyr::mutate(Probability = ifelse(Probability == 0, NA_real_, Probability))
 
-      p <- ggplot2::ggplot(rdf, ggplot2::aes(x = bin_1 - 0.5, y = bin_2 - 0.5, fill = Probability)) +
+      p <- ggplot2::ggplot(rdf, ggplot2::aes(x = x - 0.5, y = y - 0.5, fill = Probability)) +
         ggplot2::geom_tile(color = NA) +
         ggplot2::scale_fill_viridis_c(name = "Probability", limits = c(0, 1), na.value = "transparent") +
         ggplot2::scale_x_continuous(name = "Summary metric 1", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +

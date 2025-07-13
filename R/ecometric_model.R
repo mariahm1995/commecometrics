@@ -5,7 +5,7 @@
 #' Also calculates anomalies based on observed values for each point.
 #'
 #' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
-#' @param env_var Name of the environmental variable (e.g., "precip”).
+#' @param env_var Name of the environmental variable (e.g., "precip").
 #' @param transform_fun Optional transformation function for environmental variable (e.g., \code{log(x + 1)}).
 #' @param inv_transform_fun Optional inverse transformation for environmental variable (e.g., \code{exp(x) - 1}).
 #' @param grid_bins_1 Number of bins for the first trait axis. If `NULL` (default),
@@ -162,7 +162,7 @@ ecometric_model <- function(points_df,
     filtered_df$env_est_UN <- NULL
   }
 
-  model <- lm(env_est ~ env_trans, data = filtered_df)
+  model <- lm(env_trans ~ env_est, data = filtered_df)
   corr <- cor.test(filtered_df$env_est, filtered_df$env_trans)
 
   # Bin diagnostics

@@ -17,7 +17,7 @@ ecometric_model(
 \arguments{
 \item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable.}
 
-\item{env_var}{Name of the environmental variable (e.g., "precip”).}
+\item{env_var}{Name of the environmental variable (e.g., "precip").}
 
 \item{transform_fun}{Optional transformation function for environmental variable (e.g., \code{log(x + 1)}).}
 

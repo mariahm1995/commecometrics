@@ -65,7 +65,7 @@ A list with two elements:
 }
 \description{
 For each spatial sampling point, this function calculates two metrics specified
-by the user of a specified trait across and richness all overlapping species polygons
+by the user of a trait across all overlapping species polygons, and calculates richness.
 Optionally, it assigns each point to a continent using Natural Earth data.
 }
 \examples{

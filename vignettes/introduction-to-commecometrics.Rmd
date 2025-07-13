@@ -1,5 +1,5 @@
 ---
-title: "Introduction-to-commecometrics"
+title: "Introduction to commecometrics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{introduction-to-commecometrics}
@@ -17,123 +17,173 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(commecometrics)
 library(ggplot2)
+library(sf)
 ```
 
 ## Overview
-
 The `commecometrics` package provides tools for conducting ecometric analyses using trait data, species distributions, and environmental variables. It supports workflows for both continuous and categorical environmental variables, and includes utilities for fossil data integration and sensitivity analyses.
 
 This vignette introduces the main functions and workflows available in the package.
 
 ## Data Loading
+We use example data from an ecometric analysis of carnivoran carnassial tooth relative blade length (RBL) from Siciliano-Martina et al (2024). The following datasets are used to assess ecometric relationships: 
 
-We use example data included in the package:
+- `samplingPoints`: Contains environmental data (precipitation and vegetation categories) as well as geographic coordinates for each sampling point.
+- `traits`: Includes trait (RBL) measurements for each species, identified by taxon name. 
+- `geography`: Provides species range maps (from the IUCN), used to assemble carnivoran communities at each sampling point. 
 
-``` r
-data("points", package = "commecometrics")
-data("traits", package = "commecometrics")
-data("polygons", package = "commecometrics")
-data("fossils", package = "commecometrics")
+Note: To run this vignette locally with the full dataset, download and unzip the external data using the code below. The data is hosted on Figshare. This step is not run automatically to comply with CRAN policies.
+
+```{r set-working-directory, echo=FALSE, eval=FALSE}
+options(timeout = 600)
+download.file("https://ndownloader.figshare.com/files/56210120", destfile = "data.zip", mode = "wb")
+unzip("data.zip")
+```
+
+```{r}
+samplingPoints <- read.csv("data/sampling_points.csv")
+head(samplingPoints)
+traits <- read.csv("Data/traits.csv")
+head(traits)
+```
+
+```{r load-shapefile, message=FALSE}
+geography <- sf::st_read("data/data_0.shp", quiet = TRUE)
+geography$SCI_NAME <- gsub(" ", "_", geography$SCI_NAME)
 ```
 
 ## Summarize Traits by Sampling Point
+We begin by summarizing trait values (RBL) for each sampling location. This identifies where the species ranges overlap to assemble the communities and ultimately provides the mean trait value (`summ_trait_1`) and the standard deviation (`summ_trait_2`) by default, at each sampling point as well as the species richness (`richness`) per community.
 
-We begin by summarizing trait values for each sampling location:
-
-``` r
+``` {r}
 traitsByPoint <- summarize_traits_by_point(
-  points_df = points,
+  points_df = samplingPoints,
   trait_df = traits,
-  species_polygons = polygons,
+  species_polygons = geography,
   trait_column = "RBL",
-  species_name_col = "sci_name",
+  species_name_col = "SCI_NAME",
   continent = FALSE,
   parallel = FALSE
 )
+
+head(traitsByPoint[[1]])
 ```
 
 ## Ecometric Modeling (Continuous Variable)
+Now we model annual precipitation as a function of trait mean and standard deviation. We use the sampling points and apply a transformation to the environmental variable (precipitation) to maintain normality, although this step is optional. 
 
-We model annual precipitation (BIO12) as a function of trait mean and standard deviation:
+To calculate community trait mean and standard deviation, we filter the data to include only communities with at least three species. After filtering, we retained 90.1% of the original sampling points for a total of 48,721 communities out of the original 54,090.
 
-``` r
+This function also calculates the optimal number of bins for each trait metric (mean and standard deviation) using Scott's rule. In this dataset, the mean (first trait summary metric) is divided into 94 bins, and the standard deviation (second trait summary metric) is divided into 90 bins.
+
+``` {r}
 ecoModel <- ecometric_model(
   points_df = traitsByPoint$points,
-  env_var = "BIO12",
+  env_var = "precip",
   transform_fun = function(x) log(x + 1),
   inv_transform_fun = function(x) exp(x) - 1,
   min_species = 3
 )
 ```
 
-## Visualize Ecometric Space
+## Assessing the model
+To evaluate the model, we can examine the relationship between community-level trait distributions (mean and standard deviation) and the environmental variable (precipitation) using the linear model fit. Here, we find a significant relationship (t = 311.1, p < 2e-16), indicating that trait distributions explain substantial variation in precipitation. 
 
-``` r
+We can also assess the correlation between the predicted and observed precipitation using the Pearson's Correlation Coefficient (R). In this case, the resulting R value of 0.815, corresponds to an R-squared of 0.665, meaning the the model explains roughly 66.5% of the variance in precipitation.
+
+``` {r}
+summary(ecoModel$model)
+
+print(ecoModel$correlation)
+```
+
+## Visualize Ecometric Space
+Here, we visualize the ecometric space generated from the `ecoModel`. Communities are binned according to their trait values, mean on the x-axis and standard deviation on the y-axis. Each pixel represents at least one community with that combination of trait mean and standard deviation; in many cases, multiple communities fall within a single bin. 
+
+The bins are color-coded by the environmental variable (precipitation), with colors representing the estimation of the maximum likelihood estimate of precipitation for the communities in each trait bin. 
+
+Here, we see communities with higher trait variability (i.e., higher standard deviation on the y-axis) are often associated with greater precipitation. Given that RBL is an indicator of carnivoran diet, where higher values often reflect increased vertebrate prey consumption, this pattern suggests that communities in wetter environments exhibit greater dietary diversity.
+
+``` {r fig.width=4, fig.height=3, echo=FALSE}
 ecoPlot <- ecometric_space(
   model_out = ecoModel,
-  env_name = "Precipitation (loge mm)"
-)
+  env_name = "Precipitation (log)"
+) 
+
+ecoPlot <- ecoPlot +
+  scale_x_continuous(name = "Community mean") +
+  scale_y_continuous(name = "Community standard deviation")
+
 print(ecoPlot)
 ```
 
-## Reconstruct Past Environments from Fossils
+## Viewing communities per bin
+We can examine how many communities are assigned to each trait bin within found within the ecometric space. In the example below, we display a subset of the bin count matrix, focusing on bins near the center of the trait distribution.
 
-``` r
-recon <- reconstruct_env(
-  fossildata = fossils,
-  model_out = ecoModel,
-  match_nearest = TRUE,
-  fossil_lon = "Long",
-  fossil_lat = "Lat",
-  modern_id = "GlobalID",
-  modern_lon = "Longitude",
-  modern_lat = "Latitude"
-)
+```{r bin-count-subset}
+ecoModel$diagnostics$bin_counts[35:45, 26:37]
 
-head(recon[, c("Site", "fossil_env_est_UN", "fossil_minlimit_UN", "fossil_maxlimit_UN")])
+head(ecoModel$eco_space)
 ```
 
 ## Sensitivity Analysis
+To evaluate how varying sample sizes affect the sensitivity and transferability of the model, we can conduct a sensitivity analysis. The results are visualized in four plots and summarized in accompanying tables. Each plot shows performance metrics across a range of community sample sizes (x-axis), based on repeated subsampling of the data. 
 
-``` r
+The four panels display the following metrics: A) Training correlation (how well the model fits the training data), B) Testing correlation (the model's generalizability to new data), C) Training mean anomaly (the average prediction error within the training set), D) Testing mean anomaly (the average prediction error in the test set). 
+
+In Panel A, we observe that training correlation remains relatively consistent across sample sizes, with ful stabilization occurring around 800 communities. In panel B, the testing correlation becomes stable with roughly 700 communities. Panel C shows that the training prediction error decreases and stabilizates around 700 communities, while Panel D reveals that testing error declines and plateaus around 400 communities. 
+
+These plots help identify the minimum sample size needed for robust generalizable model performance. More detailed results can be examinined directly in the summary tables returned by the sensitivity analysis function.
+
+``` {r sensitivity-plot, fig.width=8, fig.height=6, warning=FALSE, message=FALSE}
 sensitivityResults <- sensitivity_analysis(
   points_df = traitsByPoint$points,
-  env_var = "BIO12",
+  env_var = "precip",
   sample_sizes = seq(100, 1000, 300),
   iterations = 5,
   transform_fun = function(x) log(x + 1),
   parallel = FALSE
 )
 
+head(sensitivityResults$combined_results)
+
 print(sensitivityResults$summary_results)
 ```
 
-## Qualitative Environmental Models
+## Ecometric Modeling (Categorical variable)
+Alternatively, we can model the ecometric space using a categorical environmental variables. In this example, we use vegetation type, classifying communities into five categories: arctic, deciduous, desert, evergreen, grassland. Due to the slight difference in the available environmental data, filtering for communities with at least three species now retains 47,671 out of the original 52,306 communities. Using Scott's Rule, the model identifies 82 bins for the trait mean and 85 bins for the trait standard deviation as the optimal binning scheme.
 
-``` r
+``` {r}
+table(samplingPoints$VegSimple)
+
+samplingPoints$VegSimple <- factor(samplingPoints$VegSimple,
+                   levels = 1:5,
+                   labels = c("Arctic", "Deciduous", "Desert", "Evergreen", "Grassland"))
+
+
 ecoModelQual <- ecometric_model_qual(
   points_df = traitsByPoint$points,
-  category_col = "DOM_NUM",
+  category_col = "VegSimple",
   min_species = 3
 )
+```
 
-reconQual <- reconstruct_env_qual(
-  fossildata = fossils,
+## Visualize Ecometric Space (Categorical variable)
+We can similarily visualize this ecometric space
+
+``` {r}
+ecoPlotQual <- ecometric_space(
   model_out = ecoModelQual,
-  match_nearest = TRUE,
-  fossil_lon = "Long",
-  fossil_lat = "Lat",
-  modern_id = "GlobalID",
-  modern_lon = "Longitude",
-  modern_lat = "Latitude"
-)
+  env_name = "VegSimple"
+) 
 
-qualPlot <- ecometric_space_qual(
-  model_out = ecoModelQual,
-  fossil_data = reconQual
-)
+ecoPlotQual <- ecoPlotQual +
+  scale_x_continuous(name = "Community mean") +
+  scale_y_continuous(name = "Community standard deviation")
 
-print(qualPlot$ecometric_space_plot)
+print(ecoPlotQual)
+
+ecoModelQual$eco_space
 ```
 
 ## Sensitivity Analysis (Qualitative)
@@ -152,6 +202,6 @@ print(sensitivityQual$summary_results)
 
 ## Conclusion
 
-This vignette demonstrates the key steps in an ecometric workflow using `commecometrics`. Users can extend these examples to their own data, customizing the trait variable, environment, and fossil data as needed.
+This vignette demonstrates the key steps in an ecometric workflow using `commecometrics`. Users can extend these examples to their own data, customizing the trait variable and environment as needed.
 
 For detailed help on each function, see the package documentation and individual function examples.

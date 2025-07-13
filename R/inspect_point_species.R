@@ -2,7 +2,7 @@
 #'
 #' Creates an interactive map to verify species overlap at selected points.
 #'
-#' @param traits_summary A list output from `summarize_traits_by_point()`, containing summarized trait values (`$points`) and species overlaps (`$overlap`)..
+#' @param traits_summary A list output from `summarize_traits_by_point()`, containing summarized trait values (`$points`) and species overlaps (`$overlap`).
 #' @param point_ids Optional. A vector of specific point IDs to inspect. If NULL, selects \code{n_random} points at random.
 #' @param n_random Number of random points to inspect if \code{point_ids} not provided (default = 10).
 #' @param lon_col Name of the longitude column in \code{points} (default = "Longitude").
@@ -53,6 +53,12 @@ inspect_point_species <- function(traits_summary,
                                   env_var = NULL) {
   points_df <- traits_summary$points
   species_overlap <- traits_summary$overlap
+
+  required_cols <- c("summ_trait_1", "summ_trait_2", "richness", "count_trait")
+  missing_cols <- setdiff(required_cols, names(points_df))
+  if (length(missing_cols) > 0) {
+    stop("Missing expected columns in traits_summary$points: ", paste(missing_cols, collapse = ", "))
+  }
 
   # Determine which points to inspect
   if (is.null(point_ids)) {

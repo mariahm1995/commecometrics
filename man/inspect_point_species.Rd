@@ -16,7 +16,7 @@ inspect_point_species(
 )
 }
 \arguments{
-\item{traits_summary}{A list output from \code{summarize_traits_by_point()}, containing summarized trait values (\verb{$points}) and species overlaps (\verb{$overlap})..}
+\item{traits_summary}{A list output from \code{summarize_traits_by_point()}, containing summarized trait values (\verb{$points}) and species overlaps (\verb{$overlap}).}
 
 \item{point_ids}{Optional. A vector of specific point IDs to inspect. If NULL, selects \code{n_random} points at random.}
 

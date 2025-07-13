@@ -1,7 +1,7 @@
 #' Summarize trait distributions at sampling points with optional continent assignment
 #'
 #' For each spatial sampling point, this function calculates two metrics specified
-#' by the user of a specified trait across and richness all overlapping species polygons
+#' by the user of a trait across all overlapping species polygons, and calculates richness.
 #' Optionally, it assigns each point to a continent using Natural Earth data.
 #'
 #' @param points_df A data frame containing sampling points with columns for longitude and latitude.
@@ -68,6 +68,11 @@ summarize_traits_by_point <- function(points_df,
                                       lat_col = "Latitude",
                                       parallel = TRUE,
                                       n_cores = parallel::detectCores() - 1) {
+
+  if (.Platform$OS.type == "windows" && parallel) {
+    warning("Parallel processing is limited on Windows. Consider using `parallel = FALSE`.")
+  }
+
   if (isTRUE(continent)) {
     continent_shp <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
   }
@@ -121,9 +126,8 @@ summarize_traits_by_point <- function(points_df,
   points_df <- sf::st_drop_geometry(points_sf)
   points_df <- dplyr::bind_cols(points_df, points_df_coords)
 
-  trait_lookup <- trait_df %>%
-    dplyr::select(TaxonName, {{ trait_column }}) %>%
-    tibble::deframe()
+  trait_lookup <- trait_df[, c("TaxonName", trait_column)]
+  trait_lookup <- tibble::deframe(trait_lookup)
 
   message("Summarizing trait values for each point...")
 
