@@ -10,7 +10,9 @@ ecometric_space(
   fossil_data = NULL,
   fossil_color = "#000000",
   modern_color = "#bc4749",
-  palette = c("#bc6c25", "#fefae0", "#606c38")
+  palette = c("#bc6c25", "#fefae0", "#606c38"),
+  x_label = "Summary metric 1",
+  y_label = "Summary metric 2"
 )
 }
 \arguments{
