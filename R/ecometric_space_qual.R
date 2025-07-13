@@ -198,7 +198,7 @@ ecometric_space_qual <- function(model_out,
               ymax = as.numeric(fossil_bin_2)
             ),
             inherit.aes = FALSE,
-            colour = fossil_color, alpha = 0, size = 0.8
+            colour = fossil_color, alpha = 0, linewidth = 0.8
           ) +
           geom_rect(
             data = fossil_data,
@@ -209,7 +209,7 @@ ecometric_space_qual <- function(model_out,
               ymax = as.numeric(bin_2)
             ),
             inherit.aes = FALSE,
-            colour = modern_color, alpha = 0, size = 1
+            colour = modern_color, alpha = 0, linewidth = 1
           )
       }
 

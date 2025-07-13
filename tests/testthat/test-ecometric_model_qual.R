@@ -37,7 +37,7 @@ test_that("ecometric_model_qual runs correctly and returns expected structure", 
 
   # Check that eco_space is a data frame with mode predictions
   expect_s3_class(model_out$eco_space, "data.frame")
-  expect_true(all(c("bin_1", "bin_2", "env_est") %in% colnames(model_out$eco_space)))
+  expect_true(all(c("x", "y", "env_est") %in% colnames(model_out$eco_space)))
 
   # Check prediction accuracy is numeric between 0 and 100
   expect_type(model_out$prediction_accuracy, "double")

@@ -77,7 +77,7 @@ reconstruct_env_qual <- function(fossildata,
   required_cols <- c("fossil_summ_trait_1", "fossil_summ_trait_2")
   missing_cols <- setdiff(required_cols, names(fossildata))
   if (length(missing_cols) > 0) {
-    stop("Missing required columns in 'points_df': ", paste(missing_cols, collapse = ", "))
+    stop("Missing required columns in 'fossildata': ", paste(missing_cols, collapse = ", "))
   }
 
   message("Binning fossil points into trait space...")

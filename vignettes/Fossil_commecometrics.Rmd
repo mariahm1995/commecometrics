@@ -1,9 +1,10 @@
 ---
-title: "Fossils_Commecometrics"
-output:
-  pdf_document: default
-  html_document: default
-date: "2025-07-09"
+title: "Fossils commecometrics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction-to-commecometrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -18,17 +19,10 @@ library(commecometrics)
 library(ggplot2)
 library(sf)
 ```
+## 1. Overview
+The `commecometrics` package offers a flexible framework for modeling trait–environment relationships and applying these models to fossil data. This vignette demonstrates how the `commecometrics` package can reconstruct past environments from fossil community traits. Environmental conditions such as precipitation or vegetation class can be estimated at fossil localities based on where their trait combinations fall within the modern trait space. For a full description of the modern trait summarization and model fitting workflow, please refer to the introductory vignette (`introduction-to-commecometrics`).
 
-```{r set-working-directory, echo=FALSE}
-options(timeout = 600)
-download.file("https://ndownloader.figshare.com/files/55633466", destfile = "data.zip", mode = "wb")
-unzip("data.zip")
-```
-
-## Overview
-The `commecometrics` package offers a flexible framework for modeling trait-environment relationships. By quantifying how modern community-level traits relate to environmental conditions, users can reconstruct paleoenvironments using fossil trait data. This vignette demonstrates how to integrate fossil data into ecometric analyses, building on the introductory examples.
-
-## Data Loading
+## 2. Data Loading
 
 We begin by loading:
 
@@ -40,19 +34,25 @@ We begin by loading:
 - **Fossil data:**
   + `fossils`: Mean and standard deviation of trait values for seven North American fossil sites
 
+```{r set-working-directory, echo=FALSE}
+options(timeout = 600)
+download.file("https://ndownloader.figshare.com/files/55633466", destfile = "data.zip", mode = "wb")
+unzip("data.zip")
+```
+
 ```{r}
-samplingPoints <- read.csv("Data/sampling_points.csv")
-traits <- read.csv("Data/traits.csv")
-fossils <- read.csv("Data/fossil_RBL.csv")
+samplingPoints <- read.csv("data/sampling_points.csv")
+traits <- read.csv("data/traits.csv")
+fossils <- read.csv("data/fossil_RBL.csv")
 head(fossils)
 ```
 
 ```{r load-shapefile, message=FALSE}
-geography <- sf::st_read("Data/data_0.shp", quiet = TRUE)
+geography <- sf::st_read("data/data_0.shp", quiet = TRUE)
 geography$SCI_NAME <- gsub(" ", "_", geography$SCI_NAME)
 ```
 
-## Summarize Traits by Sampling Point
+## 3. Summarize Traits by Sampling Point
 We calculate community-level trait mean and standard standard deviations by intersecting species ranges with community locations: 
 ``` {r}
 traitsByPoint <- summarize_traits_by_point(
@@ -66,7 +66,7 @@ traitsByPoint <- summarize_traits_by_point(
 )
 ```
 
-## Run the ecometric model
+## 4. Run the ecometric model
 We model precipitation as a function of trait mean and standard deviation, in this case, manually setting a 25 x 25 grid:
 ``` {r}
 ecoModel <- ecometric_model(
@@ -84,23 +84,21 @@ summary(ecoModel$model)
 print(ecoModel$correlation)
 ```
 
-## Visualize the modern ecometric space
-This plot illustrates the trait-environment relationship across modern communities:
-``` {r fig.width=4, fig.height=3, echo=FALSE}
+## 5. Visualize the modern ecometric space
+This plot illustrates the trait–environment relationship across modern communities. Each grid cell (bin) corresponds to a specific range of community mean and standard deviation values. Communities whose trait summaries fall within that range are grouped into the same bin. The color of each bin represents the estimated environmental value (e.g., log-precipitation).
+``` {r fig.width=5, fig.height=4}
 ecoPlot <- ecometric_space(
   model_out = ecoModel,
-  env_name = "Precipitation (log)"
+  env_name = "Precipitation (log)",
+  x_label = "Community mean",
+  y_label = "Community standard deviation"
 ) 
-
-ecoPlot <- ecoPlot +
-  scale_x_continuous(name = "Community mean") +
-  scale_y_continuous(name = "Community standard deviation")
 
 print(ecoPlot)
 ```
 
-## Reconstruct Past Environments from Fossils
-Using the trained model, we estimate past precipitation based on fossil trait distributions. Sites falling outside the modern trait-environment space are flagged as non-analog communities. Here, we see Brynjulfson and Friesenhahn Caves are expected to have had the highest precipitation, whereas January Cave is expected to have had the lowest precipitation.
+## 6. Reconstruct Past Environments from Fossils
+We now apply the trained model to fossil trait data to estimate paleoenvironmental conditions at each site. Fossils are matched to the closest trait bin, and predictions are only returned for analog trait combinations. Sites falling outside the trait space observed in the modern training data are flagged as non-analog. Here, we see Brynjulfson and Friesenhahn Caves are expected to have had the highest precipitation, whereas January Cave is expected to have had the lowest precipitation.
 ``` {r}
 recon <- reconstruct_env(
   fossildata = fossils,
@@ -116,28 +114,22 @@ recon <- reconstruct_env(
 head(recon[, c("Site", "fossil_env_est_UN", "fossil_minlimit_UN", "fossil_maxlimit_UN")])
 ```
 
-## Plot fossil ecometric space
+## 7. Plot fossil ecometric space
 We can also overlay fossil communities in the ecometric space with the modern communities. Black boxes represent fossil site trait distributions; red boxes represent modern communities from the same geographic coordinates.
-``` {r fig.width=4, fig.height=3, echo=FALSE}
+
+``` {r fig.width=5, fig.height=4}
 fossilPlot <- ecometric_space(
   model_out = ecoModel,
   env_name = "Precipitation (log mm)",
-  fossil_data = recon
+  fossil_data = recon, 
+  x_label = "Community mean",
+  y_label = "Community standard deviation"
 )
-
-fossilPlot <- fossilPlot +
-  scale_x_continuous(name = "Community mean") +
-  scale_y_continuous(name = "Community standard deviation")
 
 print(fossilPlot)
 ```
 
-## Conclusion
-This vignette demonstrates how to:
+## 8. Conclusion
+This vignette demonstrates how `commecometrics` can be used to reconstruct past environmental conditions based on fossil community trait distributions. Ecometric models trained on modern data are used to estimate paleoenvironmental variables such as precipitation or vegetation type at fossil localities. This approach provides a powerful way to connect traits preserved in the fossil record with environmental gradients.
 
-- Summarize modern trait data by community
-- Fit ecometric models to modern environments
-- Reconstruct paleoenvironments using fossil trait data
-- Visualize trait-environment dynamics across time
-
-For detailed help on each function, see the package documentation and individual function examples.
+For a complete overview of the full workflow used to build trait–environment models from modern data, please refer to the companion vignette "`introduction-to-commecometrics`"
