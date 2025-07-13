@@ -247,32 +247,28 @@ sensitivity_analysis <- function(points_df,
   with(combined_results_clean, {
     plot(SampleSize, Training_Correlation,
       pch = 16, col = transp_black,
-      xlab = "Sample size", ylab = "Training correlation",
-      main = "Training correlation vs Sample size"
+      xlab = "Sample size", ylab = "Training correlation"
     )
     loess_fit <- loess(Training_Correlation ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)
 
     plot(SampleSize, Testing_Correlation,
       pch = 16, col = transp_black,
-      xlab = "Sample size", ylab = "Testing correlation",
-      main = "Testing correlation vs Sample size"
+      xlab = "Sample size", ylab = "Testing correlation"
     )
     loess_fit <- loess(Testing_Correlation ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)
 
     plot(SampleSize, Training_Mean_Anomaly,
       pch = 16, col = transp_black,
-      xlab = "Sample size", ylab = "Training mean anomaly",
-      main = "Training anomaly vs Sample size"
+      xlab = "Sample size", ylab = "Training mean anomaly"
     )
     loess_fit <- loess(Training_Mean_Anomaly ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)
 
     plot(SampleSize, Testing_Mean_Anomaly,
       pch = 16, col = transp_black,
-      xlab = "Sample size", ylab = "Testing mean anomaly",
-      main = "Testing anomaly vs Sample size"
+      xlab = "Sample size", ylab = "Testing mean anomaly"
     )
     loess_fit <- loess(Testing_Mean_Anomaly ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)

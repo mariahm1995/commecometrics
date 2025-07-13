@@ -219,7 +219,7 @@ sensitivity_analysis_qual <- function(points_df,
     plot(SampleSize, Training_Accuracy,
       pch = 16, col = transp_black,
       xlab = "Sample size", ylab = "Training Accuracy",
-      main = "Training Accuracy vs Sample size", ylim = c(0, 1)
+      ylim = c(0, 1)
     )
     loess_fit <- loess(Training_Accuracy ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)
@@ -228,7 +228,7 @@ sensitivity_analysis_qual <- function(points_df,
     plot(SampleSize, Testing_Accuracy,
       pch = 16, col = transp_black,
       xlab = "Sample size", ylab = "Testing Accuracy",
-      main = "Testing Accuracy vs Sample size", ylim = c(0, 1)
+      ylim = c(0, 1)
     )
     loess_fit <- loess(Testing_Accuracy ~ SampleSize)
     lines(sort(SampleSize), predict(loess_fit)[order(SampleSize)], lwd = 2)

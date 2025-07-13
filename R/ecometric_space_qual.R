@@ -133,8 +133,8 @@ ecometric_space_qual <- function(model_out,
   p1 <- ggplot2::ggplot(eco_space, ggplot2::aes(x = x - 0.5, y = y - 0.5, fill = as.factor(env_est))) +
     ggplot2::geom_tile(color = NA) +
     ggplot2::scale_fill_manual(values = palette, labels = category_labels, name = "Most likely") +
-    ggplot2::scale_x_continuous(name = "Summary metric 1", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
-    ggplot2::scale_y_continuous(name = "Summary metric 2", breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
+    ggplot2::scale_x_continuous(name = x_label, breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
+    ggplot2::scale_y_continuous(name = y_label, breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
     ggplot2::coord_fixed() +
     ggplot2::theme_bw()
 
