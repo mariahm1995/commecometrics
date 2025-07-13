@@ -124,8 +124,8 @@ ecometric_model_qual <- function(points_df,
         mode_cat <- categories[which.max(probs)]
 
         eco_list[[length(eco_list) + 1]] <- tibble::tibble(
-          bin_1 = i,
-          bin_2 = j,
+          x = i,
+          y = j,
           env_est = mode_cat,
           !!!setNames(as.list(probs), paste0("prob_", categories))
         )
@@ -134,11 +134,6 @@ ecometric_model_qual <- function(points_df,
   }
 
   eco_space <- dplyr::bind_rows(eco_list)
-  eco_space <- eco_space %>%
-    dplyr::mutate(
-      x = bin_1,
-      y = bin_2
-      )
 
   # Bin diagnostics
   bin_counts_flipped <- bin_counts[grid_bins_2:1, , drop = FALSE]

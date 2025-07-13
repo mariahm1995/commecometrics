@@ -169,7 +169,7 @@ ecometric_space_qual <- function(model_out,
 
     if (prob_col %in% names(eco_space)) {
       rdf <- eco_space %>%
-        dplyr::select(bin_1, bin_2, !!prob_col) %>%
+        dplyr::select(x, y, !!prob_col) %>%
         dplyr::rename(Probability = !!prob_col) %>%
         dplyr::mutate(Probability = ifelse(Probability == 0, NA_real_, Probability))
 

@@ -62,8 +62,7 @@ traitsByPoint <- summarize_traits_by_point(
   species_polygons = geography,
   trait_column = "RBL",
   species_name_col = "SCI_NAME",
-  continent = FALSE,
-  parallel = FALSE
+  continent = FALSE
 )
 
 head(traitsByPoint[[1]])
@@ -172,14 +171,22 @@ ecoModelQual <- ecometric_model_qual(
 We can similarily visualize this ecometric space
 
 ``` {r}
-ecoPlotQual <- ecometric_space(
-  model_out = ecoModelQual,
-  env_name = "VegSimple"
+ecoPlotQual <- ecometric_space_qual(
+  model_out = ecoModelQual
 ) 
 
-ecoPlotQual <- ecoPlotQual +
+ecoPlotQual$ecometric_space_plot <- ecoPlotQual$ecometric_space_plot +
   scale_x_continuous(name = "Community mean") +
   scale_y_continuous(name = "Community standard deviation")
+
+ecoPlotQual$probability_maps <- lapply(
+  ecoPlotQual$probability_maps,
+  function(p) {
+    p +
+      scale_x_continuous(name = "Community mean") +
+      scale_y_continuous(name = "Community standard deviation")
+  }
+)
 
 print(ecoPlotQual)
 
