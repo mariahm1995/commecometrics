@@ -10,7 +10,9 @@ ecometric_space_qual(
   palette = NULL,
   fossil_data = NULL,
   fossil_color = "#000000",
-  modern_color = "#bc4749"
+  modern_color = "#bc4749",
+  x_label = "Summary metric 1",
+  y_label = "Summary metric 2"
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ ecometric_space_qual(
 \item{fossil_color}{Outline color for fossil data bins (default = "#000000").}
 
 \item{modern_color}{Outline color for modern data bins (default: \code{"#bc4749"}).}
+
+\item{x_label}{Label for the x-axis in the output plots (default: "Summary metric 1").}
+
+\item{y_label}{Label for the y-axis in the output plots (default: "Summary metric 2").}
 }
 \value{
 A list containing:

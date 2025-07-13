@@ -9,6 +9,8 @@
 #' @param fossil_data Optional. Output from \code{reconstruct_env_qual()}.
 #' @param fossil_color Outline color for fossil data bins (default = "#000000").
 #' @param modern_color Outline color for modern data bins (default: \code{"#bc4749"}).
+#' @param x_label Label for the x-axis in the output plots (default: "Summary metric 1").
+#' @param y_label Label for the y-axis in the output plots (default: "Summary metric 2").
 #'
 #' @return A list containing:
 #'   \item{ecometric_space_plot}{ggplot showing the predicted category across trait space.}
@@ -71,7 +73,9 @@ ecometric_space_qual <- function(model_out,
                                  palette = NULL,
                                  fossil_data = NULL,
                                  fossil_color = "#000000",
-                                 modern_color = "#bc4749") {
+                                 modern_color = "#bc4749",
+                                 x_label = "Summary metric 1",
+                                 y_label = "Summary metric 2") {
   requireNamespace("ggplot2")
   requireNamespace("dplyr")
   requireNamespace("viridis")
@@ -176,8 +180,8 @@ ecometric_space_qual <- function(model_out,
       p <- ggplot2::ggplot(rdf, ggplot2::aes(x = x - 0.5, y = y - 0.5, fill = Probability)) +
         ggplot2::geom_tile(color = NA) +
         ggplot2::scale_fill_viridis_c(name = "Probability", limits = c(0, 1), na.value = "transparent") +
-        ggplot2::scale_x_continuous(name = "Summary metric 1", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
-        ggplot2::scale_y_continuous(name = "Summary metric 2", breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
+        ggplot2::scale_x_continuous(name = x_label, breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
+        ggplot2::scale_y_continuous(name = y_label, breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
         ggplot2::coord_fixed() +
         ggplot2::theme_bw() +
         ggplot2::ggtitle(category_labels[as.character(cat)])

@@ -25,6 +25,10 @@ ecometric_space(
 \item{modern_color}{Outline color for modern data bins (default: \code{"#bc4749"}).}
 
 \item{palette}{Vector of colors to use for the gradient scale representing environmental values.}
+
+\item{x_label}{Label for the x-axis in the output plots (default: "Summary metric 1").}
+
+\item{y_label}{Label for the y-axis in the output plots (default: "Summary metric 2").}
 }
 \value{
 A ggplot2 object visualizing the ecometric trait-environment surface.

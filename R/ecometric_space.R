@@ -9,6 +9,8 @@
 #' @param fossil_color Outline color for fossil data bins (default: \code{"#000000"}).
 #' @param modern_color Outline color for modern data bins (default: \code{"#bc4749"}).
 #' @param palette Vector of colors to use for the gradient scale representing environmental values.
+#' @param x_label Label for the x-axis in the output plots (default: "Summary metric 1").
+#' @param y_label Label for the y-axis in the output plots (default: "Summary metric 2").
 #'
 #' @return A ggplot2 object visualizing the ecometric trait-environment surface.
 #' @examples
@@ -102,8 +104,8 @@ ecometric_space <- function(model_out,
   ecospace <- ggplot(raster_df, aes(x = x, y = y, fill = layer)) +
     geom_raster() +
     scale_fill_gradientn(colors = palette, name = env_name, na.value = "transparent") +
-    scale_x_continuous(name = "Summary metric 1", breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
-    scale_y_continuous(name = "Summary metric 2", breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
+    scale_x_continuous(name = x_label, breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
+    scale_y_continuous(name = y_label, breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
     coord_fixed() +
     theme_bw()
 
