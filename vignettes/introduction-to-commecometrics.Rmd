@@ -105,15 +105,13 @@ The bins are color-coded by the environmental variable (precipitation), with col
 
 Here, we see communities with higher trait variability (i.e., higher standard deviation on the y-axis) are often associated with greater precipitation. Given that RBL is an indicator of carnivoran diet, where higher values often reflect increased vertebrate prey consumption, this pattern suggests that communities in wetter environments exhibit greater dietary diversity.
 
-``` {r fig.width=4, fig.height=3}
+``` {r fig.width=5, fig.height=4}
 ecoPlot <- ecometric_space(
   model_out = ecoModel,
-  env_name = "Precipitation (log)"
+  env_name = "Precipitation (log)",
+  x_label = "Community mean",
+  y_label = "Community standard deviation"
 ) 
-
-ecoPlot <- ecoPlot +
-  scale_x_continuous(name = "Community mean") +
-  scale_y_continuous(name = "Community standard deviation")
 
 print(ecoPlot)
 ```
@@ -136,7 +134,7 @@ In Panel A, we observe that training correlation remains relatively consistent a
 
 These plots help identify the minimum sample size needed for robust generalizable model performance. More detailed results can be examinined directly in the summary tables returned by the sensitivity analysis function.
 
-``` {r sensitivity-plot, fig.width=7, fig.height=6, warning=FALSE, message=FALSE}
+``` {r sensitivity-plot, fig.width=7.2, fig.height=6, warning=FALSE, message=FALSE}
 sensitivityResults <- sensitivity_analysis(
   points_df = traitsByPoint$points,
   env_var = "precip",
@@ -172,23 +170,12 @@ ecoModelQual <- ecometric_model_qual(
 ### 5.1 Visualize Ecometric Space
 We can similarily visualize this ecometric space
 
-``` {r message=FALSE, warning=FALSE}
+``` {r message=FALSE, warning=FALSE, fig.width=5, fig.height=4}
 ecoPlotQual <- ecometric_space_qual(
-  model_out = ecoModelQual
+  model_out = ecoModelQual,
+  x_label = "Community mean",
+  y_label = "Community standard deviation"
 ) 
-
-ecoPlotQual$ecometric_space_plot <- ecoPlotQual$ecometric_space_plot +
-  scale_x_continuous(name = "Community mean") +
-  scale_y_continuous(name = "Community standard deviation")
-
-ecoPlotQual$probability_maps <- lapply(
-  ecoPlotQual$probability_maps,
-  function(p) {
-    p +
-      scale_x_continuous(name = "Community mean") +
-      scale_y_continuous(name = "Community standard deviation")
-  }
-)
 
 print(ecoPlotQual$ecometric_space_plot)  # Qualitative model
 print(ecoPlotQual$probability_maps$Grassland)  # One of the category-specific maps
@@ -196,7 +183,7 @@ print(ecoPlotQual$probability_maps$Grassland)  # One of the category-specific ma
 
 ### 5.2. Sensitivity Analysis
 
-``` {r fig.width=7, fig.height=6, warning=FALSE, message=FALSE}
+``` {r fig.width=7.2, fig.height=6, warning=FALSE, message=FALSE}
 sensitivityQual <- sensitivity_analysis_qual(
   points_df = traitsByPoint$points,
   category_col = "VegSimple",

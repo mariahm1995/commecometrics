@@ -70,7 +70,9 @@ ecometric_space <- function(model_out,
                             fossil_data = NULL,
                             fossil_color = "#000000",
                             modern_color = "#bc4749",
-                            palette = c("#bc6c25", "#fefae0", "#606c38")) {
+                            palette = c("#bc6c25", "#fefae0", "#606c38"),
+                            x_label = "Summary metric 1",
+                            y_label = "Summary metric 2") {
   # Extract model outputs
   raster_df <- model_out$eco_space
   mbreaks <- model_out$diagnostics$brks_1
