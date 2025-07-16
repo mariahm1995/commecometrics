@@ -20,7 +20,7 @@ library(ggplot2)
 library(sf)
 ```
 ## 1. Overview
-The `commecometrics` package offers a flexible framework for modeling trait–environment relationships and applying these models to fossil data. This vignette demonstrates how the `commecometrics` package can reconstruct past environments from fossil community traits. Environmental conditions such as precipitation or vegetation class can be estimated at fossil localities based on where their trait combinations fall within the modern trait space. For a full description of the modern trait summarization and model fitting workflow, please refer to the introductory vignette (`introduction-to-commecometrics`).
+The `commecometrics` package offers a flexible framework for modeling trait–environment relationships and applying these models to fossil data. This vignette demonstrates how the `commecometrics` package can reconstruct past environments from fossil community traits. Environmental conditions such as precipitation or vegetation class can be estimated at fossil localities based on where their trait combinations fall within the modern trait space. For a full description of the modern trait summarization and model fitting workflow, please refer to the introductory vignette (`introduction_to_commecometrics`).
 
 ## 2. Data Loading
 
@@ -36,7 +36,7 @@ We begin by loading:
 
 ```{r set-working-directory, echo=FALSE}
 options(timeout = 600)
-download.file("https://ndownloader.figshare.com/files/55633466", destfile = "data.zip", mode = "wb")
+download.file("https://ndownloader.figshare.com/files/56228033", destfile = "data.zip", mode = "wb")
 unzip("data.zip")
 ```
 

@@ -36,7 +36,7 @@ Note: To run this vignette locally with the full dataset, download and unzip the
 
 ```{r set-working-directory, eval=FALSE}
 options(timeout = 600)
-download.file("https://ndownloader.figshare.com/files/56210120", destfile = "data.zip", mode = "wb")
+download.file("https://ndownloader.figshare.com/files/56228033", destfile = "data.zip", mode = "wb")
 unzip("data.zip")
 ```
 
