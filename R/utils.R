@@ -6,6 +6,7 @@
 #' @importFrom stats cor na.omit sd
 #' @importFrom ggplot2 ggplot aes geom_raster geom_rect scale_fill_gradientn
 #' @importFrom ggplot2 scale_x_continuous scale_y_continuous coord_fixed theme_bw
+#' @importFrom utils head
 NULL
 
 # Suppress CMD check notes for non-standard evaluation variables used in pipes and ggplot2

@@ -2,7 +2,7 @@
 title: "Introduction to commecometrics"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{introduction-to-commecometrics}
+  %\VignetteIndexEntry{introduction_to_commecometrics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -62,7 +62,8 @@ traitsByPoint <- summarize_traits_by_point(
   species_polygons = geography,
   trait_column = "RBL",
   species_name_col = "SCI_NAME",
-  continent = FALSE
+  continent = FALSE,
+  parallel = FALSE
 )
 
 head(traitsByPoint[[1]])

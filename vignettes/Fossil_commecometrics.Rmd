@@ -2,7 +2,7 @@
 title: "Fossils commecometrics"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{introduction-to-commecometrics}
+  %\VignetteIndexEntry{fossil_commecometrics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
