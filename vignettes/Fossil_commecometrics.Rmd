@@ -1,5 +1,5 @@
 ---
-title: "Fossils commecometrics"
+title: "fossil_commecometrics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{fossil_commecometrics}
@@ -34,27 +34,27 @@ We begin by loading:
 - **Fossil data:**
   + `fossils`: Mean and standard deviation of trait values for seven North American fossil sites
 
-```{r set-working-directory, echo=FALSE}
+```{r set-working-directory, echo=FALSE, eval = FALSE}
 options(timeout = 600)
 download.file("https://ndownloader.figshare.com/files/56228033", destfile = "data.zip", mode = "wb")
 unzip("data.zip")
 ```
 
-```{r}
+```{r eval = FALSE}
 samplingPoints <- read.csv("data/sampling_points.csv")
 traits <- read.csv("data/traits.csv")
 fossils <- read.csv("data/fossil_RBL.csv")
 head(fossils)
 ```
 
-```{r load-shapefile, message=FALSE}
+```{r load-shapefile, message = FALSE, eval = FALSE}
 geography <- sf::st_read("data/data_0.shp", quiet = TRUE)
 geography$SCI_NAME <- gsub(" ", "_", geography$SCI_NAME)
 ```
 
 ## 3. Summarize Traits by Sampling Point
 We calculate community-level trait mean and standard standard deviations by intersecting species ranges with community locations: 
-``` {r}
+``` {r eval = FALSE}
 traitsByPoint <- summarize_traits_by_point(
   points_df = samplingPoints,
   trait_df = traits,
@@ -68,7 +68,7 @@ traitsByPoint <- summarize_traits_by_point(
 
 ## 4. Run the ecometric model
 We model precipitation as a function of trait mean and standard deviation, in this case, manually setting a 25 x 25 grid:
-``` {r}
+``` {r eval = FALSE}
 ecoModel <- ecometric_model(
   points_df = traitsByPoint$points,
   env_var = "precip",
@@ -86,7 +86,7 @@ print(ecoModel$correlation)
 
 ## 5. Visualize the modern ecometric space
 This plot illustrates the trait–environment relationship across modern communities. Each grid cell (bin) corresponds to a specific range of community mean and standard deviation values. Communities whose trait summaries fall within that range are grouped into the same bin. The color of each bin represents the estimated environmental value (e.g., log-precipitation).
-``` {r fig.width=5, fig.height=4}
+``` {r fig.width=5, fig.height=4, eval = FALSE}
 ecoPlot <- ecometric_space(
   model_out = ecoModel,
   env_name = "Precipitation (log)",
@@ -99,7 +99,7 @@ print(ecoPlot)
 
 ## 6. Reconstruct Past Environments from Fossils
 We now apply the trained model to fossil trait data to estimate paleoenvironmental conditions at each site. Fossils are matched to the closest trait bin, and predictions are only returned for analog trait combinations. Sites falling outside the trait space observed in the modern training data are flagged as non-analog. Here, we see Brynjulfson and Friesenhahn Caves are expected to have had the highest precipitation, whereas January Cave is expected to have had the lowest precipitation.
-``` {r}
+``` {r eval = FALSE}
 recon <- reconstruct_env(
   fossildata = fossils,
   model_out = ecoModel,
@@ -117,7 +117,7 @@ head(recon[, c("Site", "fossil_env_est_UN", "fossil_minlimit_UN", "fossil_maxlim
 ## 7. Plot fossil ecometric space
 We can also overlay fossil communities in the ecometric space with the modern communities. Black boxes represent fossil site trait distributions; red boxes represent modern communities from the same geographic coordinates.
 
-``` {r fig.width=5, fig.height=4}
+``` {r fig.width=5, fig.height=4, eval = FALSE}
 fossilPlot <- ecometric_space(
   model_out = ecoModel,
   env_name = "Precipitation (log mm)",

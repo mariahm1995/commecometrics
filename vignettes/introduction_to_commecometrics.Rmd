@@ -1,5 +1,5 @@
 ---
-title: "Introduction to commecometrics"
+title: "introduction_to_commecometrics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{introduction_to_commecometrics}
@@ -34,20 +34,20 @@ We use example data from an ecometric analysis of carnivoran carnassial tooth re
 
 Note: To run this vignette locally with the full dataset, download and unzip the external data using the code below. The data is hosted on Figshare. This step is not run automatically to comply with CRAN policies.
 
-```{r set-working-directory, eval=FALSE}
+```{r set-working-directory, eval = FALSE}
 options(timeout = 600)
 download.file("https://ndownloader.figshare.com/files/56228033", destfile = "data.zip", mode = "wb")
 unzip("data.zip")
 ```
 
-```{r}
+```{r eval = FALSE}
 samplingPoints <- read.csv("data/sampling_points.csv")
 head(samplingPoints)
 traits <- read.csv("Data/traits.csv")
 head(traits)
 ```
 
-```{r load-shapefile, message=FALSE}
+```{r load-shapefile, message = FALSE, eval = FALSE}
 geography <- sf::st_read("data/data_0.shp", quiet = TRUE)
 geography$SCI_NAME <- gsub(" ", "_", geography$SCI_NAME)
 ```
@@ -55,7 +55,7 @@ geography$SCI_NAME <- gsub(" ", "_", geography$SCI_NAME)
 ## 3. Summarize Traits by Sampling Point
 We begin by summarizing trait values (RBL) for each sampling location. This identifies where the species ranges overlap to assemble the communities and, by default, calculates the mean trait value (`summ_trait_1`) and the standard deviation (`summ_trait_2`) for each sampling point, along with the species richness (`richness`) per community. The mean and standard deviation are commonly used metrics in ecometric analyses. However, users can supply any custom summary metric functions if alternative descriptors are desired.
 
-``` {r}
+``` {r eval = FALSE}
 traitsByPoint <- summarize_traits_by_point(
   points_df = samplingPoints,
   trait_df = traits,
@@ -78,7 +78,7 @@ To calculate community trait mean and standard deviation, we filter the data to 
 
 This function also calculates the optimal number of bins for each trait metric (mean and standard deviation) using Scott's rule. In this dataset, the mean (first trait summary metric) is divided into 94 bins, and the standard deviation (second trait summary metric) is divided into 90 bins.
 
-``` {r}
+``` {r eval = FALSE}
 ecoModel <- ecometric_model(
   points_df = traitsByPoint$points,
   env_var = "precip",
@@ -93,7 +93,7 @@ To evaluate the model, we can examine the relationship between community-level t
 
 We can also assess the correlation between the predicted and observed precipitation using the Pearson's Correlation Coefficient (R). In this case, the resulting R value of 0.815, corresponds to an R-squared of 0.665, meaning the the model explains roughly 66.5% of the variance in precipitation.
 
-``` {r}
+``` {r eval = FALSE}
 summary(ecoModel$model)
 
 print(ecoModel$correlation)
@@ -106,7 +106,7 @@ The bins are color-coded by the environmental variable (precipitation), with col
 
 Here, we see communities with higher trait variability (i.e., higher standard deviation on the y-axis) are often associated with greater precipitation. Given that RBL is an indicator of carnivoran diet, where higher values often reflect increased vertebrate prey consumption, this pattern suggests that communities in wetter environments exhibit greater dietary diversity.
 
-``` {r fig.width=5, fig.height=4}
+``` {r fig.width=5, fig.height=4, eval = FALSE}
 ecoPlot <- ecometric_space(
   model_out = ecoModel,
   env_name = "Precipitation (log)",
@@ -120,7 +120,7 @@ print(ecoPlot)
 ### 4.4. Viewing communities per bin
 We can examine how many communities are assigned to each trait bin within found within the ecometric space. In the example below, we display a subset of the bin count matrix, focusing on bins near the center of the trait distribution.
 
-```{r bin-count-subset}
+```{r bin-count-subset, eval = FALSE}
 ecoModel$diagnostics$bin_counts[35:45, 26:37]
 
 head(ecoModel$eco_space)
@@ -135,7 +135,7 @@ In Panel A, we observe that training correlation remains relatively consistent a
 
 These plots help identify the minimum sample size needed for robust generalizable model performance. More detailed results can be examinined directly in the summary tables returned by the sensitivity analysis function.
 
-``` {r sensitivity-plot, fig.width=7.2, fig.height=6, warning=FALSE, message=FALSE}
+``` {r sensitivity-plot, fig.width=7.2, fig.height=6, warning=FALSE, message=FALSE, eval = FALSE}
 sensitivityResults <- sensitivity_analysis(
   points_df = traitsByPoint$points,
   env_var = "precip",
@@ -153,7 +153,7 @@ print(sensitivityResults$summary_results)
 ## 5. Qualitative Environmental Variables (Vegetation)
 Alternatively, we can model the ecometric space using a categorical environmental variables. In this example, we use vegetation type, classifying communities into five categories: arctic, deciduous, desert, evergreen, grassland. Due to the slight difference in the available environmental data, filtering for communities with at least three species now retains 47,671 out of the original 52,306 communities. Using Scott's Rule, the model identifies 82 bins for the trait mean and 85 bins for the trait standard deviation as the optimal binning scheme.
 
-``` {r}
+``` {r eval = FALSE}
 table(samplingPoints$VegSimple)
 
 samplingPoints$VegSimple <- factor(samplingPoints$VegSimple,
@@ -171,7 +171,7 @@ ecoModelQual <- ecometric_model_qual(
 ### 5.1 Visualize Ecometric Space
 We can similarily visualize this ecometric space
 
-``` {r message=FALSE, warning=FALSE, fig.width=5, fig.height=4}
+``` {r message=FALSE, warning=FALSE, fig.width=5, fig.height=4, eval = FALSE}
 ecoPlotQual <- ecometric_space_qual(
   model_out = ecoModelQual,
   x_label = "Community mean",
@@ -184,7 +184,7 @@ print(ecoPlotQual$probability_maps$Grassland)  # One of the category-specific ma
 
 ### 5.2. Sensitivity Analysis
 
-``` {r fig.width=7.2, fig.height=6, warning=FALSE, message=FALSE}
+``` {r fig.width=7.2, fig.height=6, warning=FALSE, message=FALSE, eval = FALSE}
 sensitivityQual <- sensitivity_analysis_qual(
   points_df = traitsByPoint$points,
   category_col = "VegSimple",

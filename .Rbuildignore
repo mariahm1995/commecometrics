@@ -1,5 +1,6 @@
-^ecometrics\.Rproj$
-^\.Rproj\.user$
-^LICENSE\.md$
+^cran-comments\.md$
+^doc$
+^Meta$
 ^README\.Rmd$
-^data-raw$
+^ecometrics\.Rproj$
+^LICENSE\.md$

@@ -8,10 +8,10 @@
 #' @param trait_df A data frame of trait data. Must include a column for species names ('TaxonName')
 #'                and the trait of interest (default = "trait_name").
 #' @param species_polygons An `sf` object containing species distribution polygons. Must include a species name column.
-#' @param summary_trait_1 A function used to summarize the trait values across overlapping species.
+#' @param comm_metric_1 A function used to summarize the trait values across overlapping species.
 #' Defaults to \code{mean(x, na.rm = TRUE)}. The function must take a numeric vector as input and return a single numeric value.
 #' Can be replaced by any user-defined function, such as \code{max}, \code{median}, or a custom function.
-#' @param summary_trait_2 A second function used to summarize trait values.
+#' @param comm_metric_2 A second function used to summarize trait values.
 #'   Defaults to \code{sd(x, na.rm = TRUE)}. Works the same way as \code{summary_trait_1}.
 #' @param trait_column The name of the trait column in `trait_df` to summarize.
 #' @param species_name_col The name of the column in `species_polygons` that contains species names (default = "sci_name").
@@ -25,8 +25,8 @@
 #' \describe{
 #'   \item{points}{A data frame identical to `points_df` but with additional columns:
 #'     \describe{
-#'       \item{summ_trait_1}{Result of applying `summary_trait_1` to the trait values of overlapping species (e.g., mean, max, median).}
-#'       \item{summ_trait_2}{Result of applying `summary_trait_2` to the trait values of overlapping species (e.g., standard deviation, range).}
+#'       \item{summ_trait_1}{Result of applying `metric_1` to the trait values of overlapping species (e.g., mean, max, median).}
+#'       \item{summ_trait_2}{Result of applying `metric_2` to the trait values of overlapping species (e.g., standard deviation, range).}
 #'       \item{richness}{Number of species overlapping the point (regardless of trait availability).}
 #'       \item{count_trait}{Number of species with non-missing trait values at the point.}
 #'       \item{continent}{(Optional) Continent name assigned from Natural Earth data, if `continent = TRUE`.}
@@ -59,8 +59,8 @@
 summarize_traits_by_point <- function(points_df,
                                       trait_df,
                                       species_polygons,
-                                      summary_trait_1 = function(x) mean(x, na.rm = TRUE),
-                                      summary_trait_2 = function(x) sd(x, na.rm = TRUE),
+                                      comm_metric_1 = function(x) mean(x, na.rm = TRUE),
+                                      comm_metric_2 = function(x) sd(x, na.rm = TRUE),
                                       trait_column = "trait_name",
                                       species_name_col = "sci_name",
                                       continent = FALSE,
@@ -142,8 +142,8 @@ summarize_traits_by_point <- function(points_df,
     } else {
       trait_values <- trait_lookup[overlap_species]
       tibble::tibble(
-        summ_trait_1 = summary_trait_1(trait_values),
-        summ_trait_2 = summary_trait_2(trait_values),
+        summ_trait_1 = comm_metric_1(trait_values),
+        summ_trait_2 = comm_metric_2(trait_values),
         richness = length(overlap_species),
         count_trait = sum(!is.na(trait_values))
       )
