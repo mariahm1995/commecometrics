@@ -31,7 +31,7 @@ A list containing:
 \describe{
 \item{bin_1}{Bin assignment code for first trait axis.}
 \item{bin_2}{Bin assignment code for second trait axis.}
-\item{prob_\if{html}{\out{<category>}}}{Estimated probability of each environmental category per trait bin (e.g., \code{prob_1}, \code{prob_2}, etc.).}
+\item{prob_category}{Estimated probability of each environmental category per trait bin (e.g., \code{prob_1}, \code{prob_2}, etc.).}
 \item{observed_probability}{Probability assigned to the observed category for each point.}
 \item{predicted_probability}{Probability assigned to the predicted (most likely) category for each point.}
 \item{predicted_category}{Predicted environmental category for each point.}

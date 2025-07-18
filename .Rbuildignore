@@ -4,3 +4,5 @@
 ^README\.Rmd$
 ^ecometrics\.Rproj$
 ^LICENSE\.md$
+^CRAN-SUBMISSION$
+^\.Rproj\.user$
