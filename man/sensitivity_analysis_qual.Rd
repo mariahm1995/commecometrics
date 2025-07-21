@@ -69,7 +69,7 @@ Two plots are generated:
 Parallel processing is supported to speed up the analysis.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load internal data
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")

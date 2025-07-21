@@ -40,7 +40,7 @@ Visualizes the ecometric space for quantitative environmental variables
 based on the output from \code{ecometric_model()}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load internal data
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")

@@ -74,7 +74,7 @@ Four base R plots are generated to visualize model performance as a function of 
 Parallel processing is supported to speed up the analysis.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load internal data
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
@@ -94,7 +94,7 @@ traitsByPoint <- summarize_traits_by_point(
 # Run sensitivity analysis using annual precipitation
 sensitivityResults <- sensitivity_analysis(
   points_df = traitsByPoint$points,
-  env_var = "precipitation",
+  env_var = "precip",
   sample_sizes = seq(40, 90, 10),
   iterations = 5,
   transform_fun = function(x) log(x + 1),

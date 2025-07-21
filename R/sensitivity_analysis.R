@@ -44,7 +44,7 @@
 #'   \item{summary_results}{A data frame summarizing the mean anomalies and correlations across sample sizes.}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load internal data
 #' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")
@@ -64,7 +64,7 @@
 #' # Run sensitivity analysis using annual precipitation
 #' sensitivityResults <- sensitivity_analysis(
 #'   points_df = traitsByPoint$points,
-#'   env_var = "precipitation",
+#'   env_var = "precip",
 #'   sample_sizes = seq(40, 90, 10),
 #'   iterations = 5,
 #'   transform_fun = function(x) log(x + 1),
@@ -126,7 +126,6 @@ sensitivity_analysis <- function(points_df,
 
   # Define single iteration function
   single_iteration <- function(sample_size, iteration) {
-    set.seed(iteration)
 
     sampled_indices <- sample(1:nrow(points_df), size = sample_size, replace = FALSE)
     sampled_data <- points_df[sampled_indices, ]
@@ -242,6 +241,9 @@ sensitivity_analysis <- function(points_df,
   # Plotting
   combined_results_clean <- na.omit(combined_results)
   transp_black <- rgb(0, 0, 0, alpha = 0.3)
+
+  oldpar <- par(no.readonly = TRUE)
+  on.exit(par(oldpar), add = TRUE)
   par(mfrow = c(2, 2))
 
   with(combined_results_clean, {

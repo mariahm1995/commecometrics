@@ -17,9 +17,7 @@ Calculates the optimal number of bins for a numeric vector
 based on Scott's rule.
 }
 \examples{
-\dontrun{
+# Simple example
 # Example with normally distributed data
-# Load internal data
 optimal_bins(rnorm(100))
-}
 }

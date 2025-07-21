@@ -36,7 +36,7 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load sample data from the package
 #' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")

@@ -14,7 +14,7 @@
 #'
 #' @return A ggplot2 object visualizing the ecometric trait-environment surface.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load internal data
 #' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")

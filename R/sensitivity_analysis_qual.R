@@ -41,7 +41,7 @@
 #'   \item{summary_results}{Mean accuracy per sample size.}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load internal data
 #' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")
@@ -119,7 +119,6 @@ sensitivity_analysis_qual <- function(points_df,
 
   # Define single iteration function
   single_iteration <- function(sample_size, iteration) {
-    set.seed(iteration)
 
     sampled_indices <- sample(1:nrow(points_df), size = sample_size, replace = FALSE)
     sampled_data <- points_df[sampled_indices, ]
@@ -212,6 +211,9 @@ sensitivity_analysis_qual <- function(points_df,
   # Plot
   combined_results_clean <- na.omit(combined_results)
   transp_black <- rgb(0, 0, 0, alpha = 0.3)
+
+  oldpar <- par(no.readonly = TRUE)
+  on.exit(par(oldpar), add = TRUE)
   par(mfrow = c(1, 2))
 
   with(combined_results_clean, {

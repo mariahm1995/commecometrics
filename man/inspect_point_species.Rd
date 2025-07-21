@@ -39,7 +39,7 @@ An interactive leaflet map showing selected points with species list popups.
 Creates an interactive map to verify species overlap at selected points.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load sample data from the package
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")
@@ -51,10 +51,9 @@ traitsByPoint <- summarize_traits_by_point(
   trait_df = traits,
   species_polygons = spRanges,
   trait_column = "RBL",
-  species_name_col = "TaxonName",
+  species_name_col = "sci_name",
   continent = FALSE,
-  parallel = FALSE,
-  ID_col = "ID"
+  parallel = FALSE
 )
 
 # Visualize a random sample of 10 points

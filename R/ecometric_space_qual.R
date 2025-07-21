@@ -17,7 +17,7 @@
 #'   \item{probability_maps}{List of ggplots showing probability surfaces for each category.}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load internal data
 #' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")

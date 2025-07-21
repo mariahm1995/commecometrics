@@ -54,7 +54,7 @@ environmental category by projecting them onto a qualitative ecometric space
 built from modern data. Optionally, it assigns each fossil point to the nearest modern sampling point.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load internal data
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")

@@ -31,7 +31,7 @@
 #' \item{prediction_accuracy}{Overall percentage of correct predictions.}
 #' @importFrom stats density setNames
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load internal data
 #' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")
@@ -43,7 +43,7 @@
 #'   trait_df = traits,
 #'   species_polygons = spRanges,
 #'   trait_column = "RBL",
-#'   species_name_col = "TaxonName",
+#'   species_name_col = "sci_name",
 #'   continent = FALSE,
 #'   parallel = FALSE
 #' )

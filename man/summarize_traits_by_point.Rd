@@ -69,7 +69,7 @@ by the user of a trait across all overlapping species polygons, and calculates r
 Optionally, it assigns each point to a continent using Natural Earth data.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load sample data from the package
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")

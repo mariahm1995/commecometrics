@@ -66,7 +66,7 @@ built from modern data. Optionally, it also assigns each fossil point to the nea
 modern sampling site to retrieve observed environmental data.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load internal data
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")

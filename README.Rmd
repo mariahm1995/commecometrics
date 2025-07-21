@@ -24,7 +24,7 @@ The commecometrics package provides tools for conducting ecometric analyses usin
 
 You can install the development version of commecometrics from [GitHub](https://github.com/) with:
 
-```{r}
+```{r, eval = FALSE}
 # Install devtools if you don't have it
 install.packages("devtools")
 
@@ -33,7 +33,7 @@ devtools::install_github("mariahm1995/commecometrics")
 ```
 
 You can also get the official release version from CRAN
-```{r}
+```{r, eval = FALSE}
 install.packages("commecometrics")
 ```
 

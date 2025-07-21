@@ -7,11 +7,9 @@
 #' @return Integer representing the optimal number of bins.
 #'
 #' @examples
-#' \dontrun{
+#' # Simple example
 #' # Example with normally distributed data
-#' # Load internal data
 #' optimal_bins(rnorm(100))
-#'}
 #' @export
 optimal_bins <- function(x) {
   x <- na.omit(x)

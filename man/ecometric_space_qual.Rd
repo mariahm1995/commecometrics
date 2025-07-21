@@ -42,7 +42,7 @@ Visualizes the predicted ecometric space (predicted category) and probability ma
 for each category based on the output from \code{ecometric_model_qualitative()}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load internal data
 data("geoPoints", package = "commecometrics")
 data("traits", package = "commecometrics")

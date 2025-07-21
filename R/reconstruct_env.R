@@ -34,7 +34,7 @@
 #'   \item{...}{Additional columns from the matched modern site if \code{match_nearest = TRUE} (e.g., observed environmental values).}
 #' }
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load internal data
 #' data("geoPoints", package = "commecometrics")
 #' data("traits", package = "commecometrics")
