@@ -99,18 +99,18 @@ reconstruct_env_qual <- function(fossildata,
     sd <- fossildata$fossilsdc[i]
 
     if (!is.na(mb) && !is.na(sd)) {
-      pred_row <- eco_space %>% dplyr::filter(mbc == mb, sdc == sd)
+      pred_row <- eco_space %>% dplyr::filter(x == mb, y == sd)
 
       if (nrow(pred_row) >= 1) {
         predictions[[i]] <- pred_row[1, , drop = FALSE]
       } else {
-        empty <- tibble::tibble(mbc = mb, sdc = sd, env_est = NA)
+        empty <- tibble::tibble(x = mb, y = sd, env_est = NA)
         prob_cols <- grep("^prob_", names(eco_space), value = TRUE)
         for (col in prob_cols) empty[[col]] <- NA_real_
         predictions[[i]] <- empty
       }
     } else {
-      empty <- tibble::tibble(mbc = NA_integer_, sdc = NA_integer_, env_est = NA)
+      empty <- tibble::tibble(x = NA_integer_, y = NA_integer_, env_est = NA)
       prob_cols <- grep("^prob_", names(eco_space), value = TRUE)
       for (col in prob_cols) empty[[col]] <- NA_real_
       predictions[[i]] <- empty
