@@ -22,8 +22,8 @@
 #'
 #' @return A data frame (`fossildata`) with reconstructed environmental values and optional nearest modern point data. Includes the following additional columns:
 #' \describe{
-#'   \item{fossil_bin_1}{Assigned bin number for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
-#'   \item{fossil_bin_2}{Assigned bin number for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
+#'   \item{fossil_bin_1}{Numeric bin index for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
+#'   \item{fossil_bin_2}{Numeric bin index for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
 #'   \item{fossil_env_est}{Maximum likelihood estimate of the environmental variable (on transformed scale if applicable).}
 #'   \item{fossil_minlimit}{Lower bound of the confidence interval around the environmental estimate (transformed scale).}
 #'   \item{fossil_maxlimit}{Upper bound of the confidence interval around the environmental estimate (transformed scale).}

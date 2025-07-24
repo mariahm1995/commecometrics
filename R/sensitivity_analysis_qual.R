@@ -4,7 +4,7 @@
 #' focusing on two aspects:
 #' \itemize{
 #'   \item \strong{Sensitivity (internal consistency)}: How accurately the model predicts environmental conditions
-#'         on the same data it was trained on.
+#'         on the same data on which it was trained.
 #'   \item \strong{Transferability (external applicability)}: How well the model performs on unseen data.
 #' }
 #' It tests different sample sizes by resampling the data multiple times (bootstrap iterations),
@@ -18,7 +18,7 @@
 #'
 #' Parallel processing is supported to speed up the analysis.
 #'
-#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
+#' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable specified in `category_col`.
 #' @param category_col Name of the column containing the categorical trait.
 #' @param sample_sizes Numeric vector specifying the number of communities (sampling points)
 #'   to evaluate in the sensitivity analysis. For each value, a random subset of the data of that
@@ -37,8 +37,8 @@
 #' @param n_cores Number of cores for parallelization (default = detectCores() - 1).
 #'
 #' @return A list containing:
-#'   \item{combined_results}{All raw iteration results.}
-#'   \item{summary_results}{Mean accuracy per sample size.}
+#'   \item{combined_results}{Raw iteration results as a data frame. Each row corresponds to one bootstrap iteration.}
+#'   \item{summary_results}{Mean metrics across bootstrap iterations for each sample size.}
 #'
 #' @examples
 #' \donttest{

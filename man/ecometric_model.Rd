@@ -17,7 +17,7 @@ ecometric_model(
 \arguments{
 \item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable.}
 
-\item{env_var}{Name of the environmental variable (e.g., "precip").}
+\item{env_var}{Name of the column containing the environmental variable (e.g., "precip").}
 
 \item{transform_fun}{Optional transformation function for environmental variable (e.g., \code{log(x + 1)}).}
 
@@ -29,27 +29,26 @@ the number is calculated automatically using Scott's rule via \code{optimal_bins
 \item{grid_bins_2}{Number of bins for the second trait axis. If \code{NULL} (default),
 the number is calculated automatically using Scott's rule via \code{optimal_bins()}.}
 
-\item{min_species}{Minimum number of species per point (default = 3).}
+\item{min_species}{Minimum number of species with trait data per point (default = 3).}
 }
 \value{
 A list containing:
 \item{points_df}{Filtered input data frame with the following added columns:
 \describe{
 \item{env_trans}{Transformed environmental variable (if a transformation function is used).}
-\item{bin_1}{Bin assignment code for mean trait value.}
-\item{bin_2}{Bin assignment code for standard deviation of trait.}
+\item{bin_1}{Numeric bin index for the first trait axis (\code{summ_trait_1}), indicating the trait interval to which each geographic point belongs.}
+\item{bin_2}{Numeric bin index for the second trait axis (\code{summ_trait_2}), indicating the trait interval to which each geographic point belongs.}
 \item{env_est}{Predicted (maximum likelihood) environmental value on transformed scale.}
 \item{env_anom}{Difference between observed and predicted environmental values (transformed scale).}
 \item{env_est_UN}{Inverse-transformed predicted value (if \code{inv_transform_fun} is provided).}
 \item{env_anom_UN}{Inverse-transformed anomaly value (if \code{inv_transform_fun} is provided).}
 }
 }
-\item{eco_space}{Raster-format data frame representing trait space bins with estimated environmental values.}
+\item{eco_space}{A data frame representing the ecometric trait space as a grid of trait bins. Each row corresponds to a unique bin combination (x = bin_1, y = bin_2) and includes the predicted environmental value (on the transformed scale if a transformation was applied).}
 \item{model}{Linear model object (\code{lm}) relating predicted environmental values to observed environmental values (transformed scale when used).}
 \item{correlation}{Output from \code{cor.test}, reporting the Pearson correlation between predicted and observed environmental values (transformed scale when used).}
 \item{diagnostics}{Summary stats about bin usage and data coverage.}
 \item{settings}{Metadata including the modeled trait and transformation functions.}
-\item{prediction_accuracy}{Overall percentage of correct predictions.}
 }
 \description{
 Builds an ecometric trait space for quantitative environmental variables,

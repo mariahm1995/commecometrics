@@ -6,7 +6,6 @@
 \usage{
 ecometric_space_qual(
   model_out,
-  category_labels = NULL,
   palette = NULL,
   fossil_data = NULL,
   fossil_color = "#000000",
@@ -16,9 +15,7 @@ ecometric_space_qual(
 )
 }
 \arguments{
-\item{model_out}{Output from \code{ecometric_model_qualitative()}, containing environmental estimates in trait space.}
-
-\item{category_labels}{Optional named vector for category labels (used in the legend title). If \code{NULL}, the unique strings in the predicted category column (\code{env_est}) will be used as-is.}
+\item{model_out}{Output from \code{ecometric_model_qual()}, containing environmental estimates in trait space.}
 
 \item{palette}{Optional color vector for categories (must match number of categories).}
 
@@ -35,7 +32,7 @@ ecometric_space_qual(
 \value{
 A list containing:
 \item{ecometric_space_plot}{ggplot showing the predicted category across trait space.}
-\item{probability_maps}{List of ggplots showing probability surfaces for each category.}
+\item{probability_maps}{List of ggplots showing probability surfaces across trait space for each category.}
 }
 \description{
 Visualizes the predicted ecometric space (predicted category) and probability maps

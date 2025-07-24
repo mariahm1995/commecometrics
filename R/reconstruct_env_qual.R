@@ -11,15 +11,15 @@
 #' @param match_nearest Logical; if TRUE, matches each fossil to the nearest modern point (default = TRUE).
 #' @param fossil_lon Name of the longitude column in `fossildata`. Required if \code{match_nearest = TRUE}.
 #' @param fossil_lat Name of the latitude column in `fossildata`. Required if \code{match_nearest = TRUE}.
-#' @param modern_id Name of the unique ID column in modern points (optional for metadata merging).
+#' @param modern_id Name of the unique ID column in modern points (e.g., "GlobalID").
 #' @param modern_lon Name of the longitude column in modern points. Required if \code{match_nearest = TRUE}.
 #' @param modern_lat Name of the latitude column in modern points. Required if \code{match_nearest = TRUE}.
-#' @param crs_proj Coordinate reference system for sf operations (default = EPSG:4326).
+#' @param crs_proj Coordinate reference system to use when converting fossil and modern data to sf format (default = EPSG:4326)
 #'
-#' @return A data frame (`fossildata`) updated with:
+#' @return A data frame (`fossildata`) with reconstructed environmental values and optional nearest modern point data. Includes the following additional columns:
 #' \describe{
-#'   \item{fossil_bin_1}{Assigned bin number for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
-#'   \item{fossil_bin_2}{Assigned bin number for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
+#'   \item{fossil_bin_1}{Numeric bin index for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
+#'   \item{fossil_bin_2}{Numeric bin index for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
 #'   \item{fossil_env_est}{Predicted environmental category based on trait bin.}
 #'   \item{fossil_prob_*}{Probability of each environmental category for the assigned bin.}
 #'   \item{nearest_modern_point}{(Optional) ID of the nearest modern sampling point (if \code{match_nearest = TRUE}).}

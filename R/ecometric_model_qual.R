@@ -6,7 +6,7 @@
 #' and anomalies for each point.
 #'
 #' @param points_df Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: `summ_trait_1`, `summ_trait_2`, `count_trait`, and the environmental variable.
-#' @param category_col Name of the column containing the categorical trait.
+#' @param category_col Name of the column containing the categorical environmental variable (e.g., "vegetation").
 #' @param grid_bins_1 Number of bins for the first trait axis. If `NULL` (default),
 #'   the number is calculated automatically using Scott's rule via `optimal_bins()`.
 #' @param grid_bins_2 Number of bins for the second trait axis. If `NULL` (default),
@@ -15,17 +15,17 @@
 #' @return A list containing:
 #' \item{points_df}{Filtered input data frame with the following added columns:
 #'   \describe{
-#'     \item{bin_1}{Bin assignment code for first trait axis.}
-#'     \item{bin_2}{Bin assignment code for second trait axis.}
-#'     \item{prob_category}{Estimated probability of each environmental category per trait bin (e.g., \code{prob_1}, \code{prob_2}, etc.).}
+#'     \item{bin_1}{Numeric bin index for the first trait axis (`summ_trait_1`), indicating the trait interval to which each geographic point belongs.}
+#'     \item{bin_2}{Numeric bin index for the second trait axis (`summ_trait_2`), indicating the trait interval to which each geographic point belongs.}
+#'     \item{prob_category}{Estimated probability of each environmental category for each point (e.g., \code{prob_1}, \code{prob_2}, etc.).}
 #'     \item{observed_probability}{Probability assigned to the observed category for each point.}
 #'     \item{predicted_probability}{Probability assigned to the predicted (most likely) category for each point.}
 #'     \item{predicted_category}{Predicted environmental category for each point.}
 #'     \item{correct_prediction}{Indicator for whether the predicted category matches the observed category (\code{"Yes"} or \code{"No"}).}
-#'     \item{env_anom}{Difference between predicted and observed category probabilities.}
+#'     \item{env_anom}{Difference between observed and predicted category probabilities.}
 #'   }
 #' }
-#' \item{eco_space}{Raster-format data frame representing trait space bins with estimated environmental categories.}
+#' \item{eco_space}{A data frame representing the ecometric trait space as a grid of trait bins. Each row corresponds to a unique bin combination (x = bin_1, y = bin_2) and includes the predicted environmental category (`env_est`) and the estimated probability of each possible category (`prob_<category>`).}
 #' \item{diagnostics}{Summary stats about bin usage and data coverage.}
 #' \item{settings}{Metadata including the modeled trait.}
 #' \item{prediction_accuracy}{Overall percentage of correct predictions.}

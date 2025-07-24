@@ -14,7 +14,7 @@ Integer representing the optimal number of bins.
 }
 \description{
 Calculates the optimal number of bins for a numeric vector
-based on Scott's rule.
+based on Scott's rule. For more details see Scott (1979) \url{doi:10.1093/biomet/66.3.605}
 }
 \examples{
 # Simple example

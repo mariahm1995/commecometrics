@@ -29,19 +29,19 @@ using the column names specified by \code{fossil_summ_trait_1} and \code{fossil_
 
 \item{fossil_lat}{Name of the latitude column in \code{fossildata}. Required if \code{match_nearest = TRUE}.}
 
-\item{modern_id}{Name of the unique ID column in modern points (optional for metadata merging).}
+\item{modern_id}{Name of the unique ID column in modern points (e.g., "GlobalID").}
 
 \item{modern_lon}{Name of the longitude column in modern points. Required if \code{match_nearest = TRUE}.}
 
 \item{modern_lat}{Name of the latitude column in modern points. Required if \code{match_nearest = TRUE}.}
 
-\item{crs_proj}{Coordinate reference system for sf operations (default = EPSG:4326).}
+\item{crs_proj}{Coordinate reference system to use when converting fossil and modern data to sf format (default = EPSG:4326)}
 }
 \value{
-A data frame (\code{fossildata}) updated with:
+A data frame (\code{fossildata}) with reconstructed environmental values and optional nearest modern point data. Includes the following additional columns:
 \describe{
-\item{fossil_bin_1}{Assigned bin number for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
-\item{fossil_bin_2}{Assigned bin number for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
+\item{fossil_bin_1}{Numeric bin index for the first trait axis (based on first summary metric of trait distribution of fossil communities).}
+\item{fossil_bin_2}{Numeric bin index for the second trait axis (based on second summary metric of trait distribution of fossil communities).}
 \item{fossil_env_est}{Predicted environmental category based on trait bin.}
 \item{fossil_prob_*}{Probability of each environmental category for the assigned bin.}
 \item{nearest_modern_point}{(Optional) ID of the nearest modern sampling point (if \code{match_nearest = TRUE}).}

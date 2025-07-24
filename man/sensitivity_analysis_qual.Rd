@@ -17,7 +17,7 @@ sensitivity_analysis_qual(
 )
 }
 \arguments{
-\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable.}
+\item{points_df}{Output first element of the list from \code{summarize_traits_by_point()}. A data frame with columns: \code{summ_trait_1}, \code{summ_trait_2}, \code{count_trait}, and the environmental variable specified in \code{category_col}.}
 
 \item{category_col}{Name of the column containing the categorical trait.}
 
@@ -45,15 +45,15 @@ the number is calculated automatically using Scott's rule via \code{optimal_bins
 }
 \value{
 A list containing:
-\item{combined_results}{All raw iteration results.}
-\item{summary_results}{Mean accuracy per sample size.}
+\item{combined_results}{Raw iteration results as a data frame. Each row corresponds to one bootstrap iteration.}
+\item{summary_results}{Mean metrics across bootstrap iterations for each sample size.}
 }
 \description{
 Evaluates how varying sample sizes affect the performance of ecometric models,
 focusing on two aspects:
 \itemize{
 \item \strong{Sensitivity (internal consistency)}: How accurately the model predicts environmental conditions
-on the same data it was trained on.
+on the same data on which it was trained.
 \item \strong{Transferability (external applicability)}: How well the model performs on unseen data.
 }
 It tests different sample sizes by resampling the data multiple times (bootstrap iterations),

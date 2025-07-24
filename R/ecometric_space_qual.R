@@ -3,8 +3,7 @@
 #' Visualizes the predicted ecometric space (predicted category) and probability maps
 #' for each category based on the output from \code{ecometric_model_qualitative()}.
 #'
-#' @param model_out Output from \code{ecometric_model_qualitative()}, containing environmental estimates in trait space.
-#' @param category_labels Optional named vector for category labels (used in the legend title). If \code{NULL}, the unique strings in the predicted category column (\code{env_est}) will be used as-is.
+#' @param model_out Output from \code{ecometric_model_qual()}, containing environmental estimates in trait space.
 #' @param palette Optional color vector for categories (must match number of categories).
 #' @param fossil_data Optional. Output from \code{reconstruct_env_qual()}.
 #' @param fossil_color Outline color for fossil data bins (default = "#000000").
@@ -14,7 +13,7 @@
 #'
 #' @return A list containing:
 #'   \item{ecometric_space_plot}{ggplot showing the predicted category across trait space.}
-#'   \item{probability_maps}{List of ggplots showing probability surfaces for each category.}
+#'   \item{probability_maps}{List of ggplots showing probability surfaces across trait space for each category.}
 #'
 #' @examples
 #' \donttest{
@@ -69,7 +68,6 @@
 #' @export
 #'
 ecometric_space_qual <- function(model_out,
-                                 category_labels = NULL,
                                  palette = NULL,
                                  fossil_data = NULL,
                                  fossil_color = "#000000",
@@ -123,16 +121,10 @@ ecometric_space_qual <- function(model_out,
   y_labels <- round(y_breaks, 2)
   y_pos <- c(0.5, middle_idx_y - 0.5, grid_bins_y - 0.5)
 
-  # Default category labels if not provided
-  if (is.null(category_labels)) {
-    category_labels <- categories
-    names(category_labels) <- categories
-  }
-
   ## 1. Predicted Category Map
   p1 <- ggplot2::ggplot(eco_space, ggplot2::aes(x = x - 0.5, y = y - 0.5, fill = as.factor(env_est))) +
     ggplot2::geom_tile(color = NA) +
-    ggplot2::scale_fill_manual(values = palette, labels = category_labels, name = "Most likely") +
+    ggplot2::scale_fill_manual(values = palette, labels = categories, name = "Most likely") +
     ggplot2::scale_x_continuous(name = x_label, breaks = x_pos, labels = x_labels, expand = c(0, 0), limits = c(0, grid_bins_x)) +
     ggplot2::scale_y_continuous(name = y_label, breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
     ggplot2::coord_fixed() +
@@ -184,7 +176,7 @@ ecometric_space_qual <- function(model_out,
         ggplot2::scale_y_continuous(name = y_label, breaks = y_pos, labels = y_labels, expand = c(0, 0), limits = c(0, grid_bins_y)) +
         ggplot2::coord_fixed() +
         ggplot2::theme_bw() +
-        ggplot2::ggtitle(category_labels[as.character(cat)])
+        ggplot2::ggtitle(cat)
 
       # Optional fossil overlay on probability maps
       if (!is.null(fossil_data)) {
