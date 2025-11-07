@@ -167,10 +167,26 @@ summarize_traits_by_point <- function(points_df,
     message("Assigning continent to each point...")
 
     continent_shp <- sf::st_make_valid(continent_shp)
-
     points_sf <- sf::st_as_sf(points_df, coords = c(lon_col, lat_col), crs = sf::st_crs(continent_shp))
+
+    if (sf::st_crs(points_sf) != sf::st_crs(continent_shp)) {
+      points_sf <- sf::st_transform(points_sf, sf::st_crs(continent_shp))
+    }
+
     joined <- sf::st_join(points_sf, continent_shp, left = TRUE)
-    points_df$continent <- joined$continent[match(sf::st_coordinates(points_sf)[, 1], sf::st_coordinates(joined)[, 1])]
+    # if join returned same number of rows, assign directly
+    if (nrow(joined) == nrow(points_sf)) {
+      points_df$continent <- joined[["continent"]]
+    } else {
+      # handle duplicated/ multiple matches: use st_intersects to get first match per point
+      ints <- sf::st_intersects(points_sf, continent_shp)
+      points_df$continent <- vapply(ints, function(idx) {
+        if (length(idx) == 0) return(NA_character_)
+        # choose first intersecting polygon
+        continent_shp[["continent"]][idx[1]]
+      }, FUN.VALUE = character(1))
+    }
+
     # Correct French Guiana: if labeled as Europe but located in South America by coordinates
     # Coordinates for French Guiana are ~longitude -54, latitude ~4 to 6
     points_df$continent[
