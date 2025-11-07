@@ -133,9 +133,13 @@ sensitivity_analysis_qual <- function(points_df,
     # Determine bin numbers if not provided
     if (is.null(grid_bins_1)) {
       grid_bins_1_train <- optimal_bins(training_data$summ_trait_1)
+    } else {
+      grid_bins_1_train <- grid_bins_1
     }
     if (is.null(grid_bins_2)) {
       grid_bins_2_train <- optimal_bins(training_data$summ_trait_2)
+    } else {
+      grid_bins_2_train <- grid_bins_2
     }
 
     # Binning function
