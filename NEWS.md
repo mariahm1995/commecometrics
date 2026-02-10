@@ -2,7 +2,7 @@
 
 * Fixed continent assignment in `summarize_traits_by_point()`.
 * Updated `sensitivity_analysis()` so that user-provided grid IDs are preserved.
-* Added a new author to package metadata.
+* Added new authors to package metadata.
 
 # commecometrics 1.1.0
 

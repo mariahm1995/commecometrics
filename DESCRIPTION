@@ -3,8 +3,9 @@ Title: Ecometric Models of Trait–Environment Relationships at the Community Le
 Version: 1.1.1
 Authors@R: c(
     person("Maria A.", "Hurtado-Materon", email = "maria.h.m_1995@tamu.edu", role = c("cre", "aut")),
-    person("Rachel A.", "Short", role = "aut"),
     person("Leila", "Siciliano-Martina", role = "aut"),
+    person("Rachel A.", "Short", role = "aut"),
+    person("Jenny L.", "McGuire", role = "aut"),
     person("A. Michelle", "Lawing", role = c("cph", "aut")))
 Description: Provides a framework for modeling relationships between functional traits and both quantitative and qualitative environmental variables at the community level. It includes tools for trait binning, likelihood-based environmental estimation, model evaluation, fossil projection into modern ecometric space, and result visualization. For more details see Vermillion et al. (2018) <doi:10.1007/978-3-319-94265-0_17>, Polly et al. (2011) <doi:10.1098/rspb.2010.2233> and Polly and Head (2015) <doi:10.1017/S1089332600002953>.
 BugReports: https://github.com/mariahm1995/commecometrics/issues
